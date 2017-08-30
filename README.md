@@ -139,4 +139,11 @@ Com o tempo, você acabará criando vários objetos do tipo Service, Deployment,
 
 Recomenda-se manter um backup regular do `etcd` para que seja possível recuperar o cluster de um desastre. Se você realizou a instalação do `etcd` conforme este exemplo, em três hosts diferentes, a recuperação do backup somente será necessária se TODAS as instâncias `etcd` forem perdidas. De modo geral, um cluster de três instâncias é capaz de perder um nó e continuar operando normalmente. Nós adicionais podem ser adicionados a qualquer momento de forma transparente.
 
-O Kubespray executa o `etcd` como um container independente fora do Kubernetes. No host Ubuntu, ele é configurado como um systemd service.
+O Kubespray executa o `etcd` como um container privilegiado independente fora do Kubernetes. No host Ubuntu, ele é configurado como um systemd service. Os parâmetros do container ficam em `/etc/etcd.env` ou diretamente no script `/usr/local/bin/etcd`. Ao modificar estes arquivos, basta reiniciar o serviço.
+
+```
+service etcd restart
+```
+
+Apesar de ser um container, o etcd é monitorado essencialmente pelo systemd do Ubuntu. Não adianta parar o container apenas usando `docker stop etcd1`, pois ele será reiniciado pelo systemd.
+
