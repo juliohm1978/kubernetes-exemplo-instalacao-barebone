@@ -26,3 +26,8 @@ Se necessário à sua infraestrutura, um número menor ou maior pode ser usado. 
 
 Este guia também presume que cada host mencionado acima possui um nome resolvível na rede DNS local e um IP fixo publicamente acessível nesta mesma rede.
 
+## Ansible
+O Kubespray utiliza Ansible para executar todas as tarefas da instalação. Assim, sua estação de trabalho precisa ter esta ferramenta instalada. Confira detalhes no [guia oficial de instalação do Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html). Ao momento, a versão mais recente 2.3.2.0 deve funcionar sem problemas, gerando apenas _warnings_ de incompatibilidade.
+
+Parte da configuração do Ansible envolve preparar cada host do cluster. Será preciso configurar todos com uma chave ssh de sua estação de trabalho, dando **acesso remoto via SSH como usuário root pela chave (sem senha)**. Confira [os diversos tutoriais pela Internet](https://www.google.com.br/search?q=ssh+chave+sem+senha&oq=ssh+chave+sem+senha&aqs=chrome..69i57j0l5.5311j0j9&sourceid=chrome&ie=UTF-8) sobre como fazer isso.
+
