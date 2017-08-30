@@ -145,5 +145,19 @@ O Kubespray executa o `etcd` como um container privilegiado independente fora do
 service etcd restart
 ```
 
+Para fazer um backup, é preciso usar a ferramenta `etcdctl` de dentro do container e depois copiar o backup para fora.
+
+```
+docker exec etcd1 etcdctl --endpoints https://IP_DO_HOST:2379 backup --data-dir /var/lib/etcd --backup-dir /backup
+docker cp etcd1:/backup /tmp/
+docker cp etcd1:/var/lib/etcd/member/snap/db /tmp/backup/member/snap/
+```
+
+Com isso, o backup estará no diretório `/tmp/backup` do host.
+
+## Restauração do Etcd
+
+Apesar do backup simplificado, uma eventual restauração é mais complicada. Como dito anteriormente, isto deve ser necessário somente no caso de um deastre completo, onde todas as instâncias foram perdidas. Um desastre parcial pode ser facilmente recuperado apenas incluindo outro nó `etcd` no cluster.
+
 Apesar de ser um container, o etcd é monitorado essencialmente pelo systemd do Ubuntu. Não adianta parar o container apenas usando `docker stop etcd1`, pois ele será reiniciado pelo systemd.
 
