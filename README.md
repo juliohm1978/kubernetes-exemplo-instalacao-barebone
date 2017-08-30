@@ -22,5 +22,7 @@ Para mostrar um exemplo completo, presume-se a existência de 6 (seis) máquinas
 | node05   | Worker |
 | node06   | Worker |
 
-Se necessário à sua infraestrutura, um número menor pode ser usado.
+Se necessário à sua infraestrutura, um número menor ou maior pode ser usado. O Kubespray suporta, inclusive, instalar um cluster com apenas um host, similar ao kubeadm.
+
+Este guia também presume que cada host mencionado acima possui um nome resolvível na rede DNS local e um IP fixo publicamente acessível nesta mesma rede.
 
