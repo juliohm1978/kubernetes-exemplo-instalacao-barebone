@@ -11,3 +11,16 @@ Detalhes sobre conceitos e o funcionamento do Kubernetes pode ser encontrado na 
 
 # Pré-requisitos
 
+Para mostrar um exemplo completo, presume-se a existência de 6 (seis) máquinas virtuais já criadas e configuradas. Com esta quantidade, teremos um cluster completo organizado da seguinte forma:
+
+| Host     | Papél no Cluster |
+| -------- | -------- |
+| node01   | Master, etcd |
+| node02   | Master, etcd |
+| node03   | Master, etcd |
+| node04   | Worker |
+| node05   | Worker |
+| node06   | Worker |
+
+Se necessário à sua infraestrutura, um número menor pode ser usado.
+
