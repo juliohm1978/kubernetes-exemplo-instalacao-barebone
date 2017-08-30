@@ -86,3 +86,49 @@ kube-master
 
 Faça uma revisão completa do arquivo `inventory/group_vars/k8s-cluster.yml` e modifique valores que fazem sentido para sua estrutura. Nele, estão os parâmetros gerais da instalação, como versão do kubernetes, versão de cada componente, plugin de rede que será usado (weave, flannel, calico), range de IPs de pods e serviços dentro do cluster e muito mais.
 
+Com tudo pronto, basta executar o script `cluster.yml`.
+
+```
+ansible-playbook cluster.yml -i inventory/inventory.txt
+```
+
+A instalação pode demorar alguns minutos, mas deve fazer todo trabalho sem erros. Ao final (depois de muitas e muitas vaquinhas) um resumo será apresentado.
+
+```
+Wednesday 30 August 2017  13:50:31 -0300 (0:00:00.038)       0:09:54.442 ****** 
+=============================================================================== 
+download : Download containers if pull is required or told to always pull - 149.38s
+kubernetes/master : Master | wait for the apiserver to be running ------ 19.10s
+download : Download containers if pull is required or told to always pull -- 13.63s
+etcd : wait for etcd up ------------------------------------------------ 11.89s
+download : Download containers if pull is required or told to always pull -- 10.92s
+kubernetes-apps/network_plugin/weave : Weave | wait for weave to become available -- 10.74s
+etcd : reload etcd ----------------------------------------------------- 10.56s
+docker : Docker | pause while Docker restarts -------------------------- 10.07s
+download : Download containers if pull is required or told to always pull --- 8.23s
+download : Download containers if pull is required or told to always pull --- 7.92s
+download : Download containers if pull is required or told to always pull --- 7.71s
+download : Download containers if pull is required or told to always pull --- 7.21s
+download : Register docker images info ---------------------------------- 5.68s
+kubernetes-apps/ansible : Kubernetes Apps | Start Resources ------------- 4.33s
+download : Create dest directory for saved/loaded container images ------ 3.69s
+kubernetes/preinstall : Install latest version of python-apt for Debian distribs --- 3.38s
+kubernetes/secrets : Gen_certs | run cert generation script ------------- 3.35s
+docker : Docker | reload docker ----------------------------------------- 3.15s
+kubernetes/master : Copy kubectl from hyperkube container --------------- 3.11s
+kubernetes/secrets : Check certs | check if a cert already exists on node --- 2.97s
+```
+
+Se tudo foi como esperado, seu cluster está pronto para ser usado. 
+
+# Desinstalação
+
+Caso precise, também é possível remover tudo que foi instalado e recomeçar do zero.
+
+```
+ansible-playbook reset.yml -i inventory/inventory
+```
+
+**CUIDADO! Este comando vai remover TUDO. Sem um backup, todas as configurações e estado atual do cluster será perdido.**
+
+
