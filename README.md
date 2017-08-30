@@ -37,3 +37,44 @@ Parte da configuração do Ansible envolve preparar cada host do cluster para um
 
 Certifique-se, também, de que o Python está instalado em todos os hosts, pois o Ansible precisa dele para executar suas tarefas.
 
+# Instalação Kubernetes
+
+Faça o download do Kubespray para sua estação de trabalho.
+
+```
+git clone https://github.com/kubernetes-incubator/kubespray.git
+cd kubespray
+```
+
+Faça uma cópia do arquivo `inventory/inventory.example` para montar o inventário com seus hosts.
+
+```
+# ## Configure 'ip' variable to bind kubernetes services on a
+# ## different ip than the default iface
+node1 ansible_ssh_user=root ansible_ssh_host=node01 ip=x.x.x.x
+node2 ansible_ssh_user=root ansible_ssh_host=node02 ip=x.x.x.x
+node3 ansible_ssh_user=root ansible_ssh_host=node03 ip=x.x.x.x
+node4 ansible_ssh_user=root ansible_ssh_host=node04 ip=x.x.x.x
+node5 ansible_ssh_user=root ansible_ssh_host=node05 ip=x.x.x.x
+node6 ansible_ssh_user=root ansible_ssh_host=node06 ip=x.x.x.x
+
+[kube-master]
+node1
+node2
+node3
+
+[etcd]
+node1
+node2
+node3
+
+[kube-node]
+node4
+node5
+node6
+
+[k8s-cluster:children]
+kube-node
+kube-master
+```
+
