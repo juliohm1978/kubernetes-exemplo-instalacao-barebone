@@ -52,7 +52,7 @@ Faça uma cópia do arquivo `inventory/inventory.example` para montar o inventá
 cp inventory/inventory.example inventory/inventory.txt
 ```
 
-O conteúdo do inventário é simples e direto.
+O conteúdo do inventário é simples e direto. Se o host possui mais de uma interface de rede, use a propriedade `ip=x.x.x.x` para especificar qual delas será usada. Este IP será usado para criar certificados e configurações de componentes no cluster.
 
 ```
 # ## Configure 'ip' variable to bind kubernetes services on a
