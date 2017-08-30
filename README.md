@@ -129,6 +129,14 @@ Caso precise, também é possível remover tudo que foi instalado e recomeçar d
 ansible-playbook reset.yml -i inventory/inventory
 ```
 
-**CUIDADO! Este comando vai remover TUDO. Sem um backup, todas as configurações e estado atual do cluster será perdido.**
+**CUIDADO! Este comando remove TUDO. Sem um backup, todas as configurações e estado atual do cluster será perdido.**
 
+# Backup
 
+Com o tempo, você acabará criando vários objetos do tipo Service, Deployment, DaemonSet, Ingress, etc. Todos estes objetos são armazenados no banco `etcd`, que representa o estado atual do cluster.
+
+## Backup do Etcd
+
+Recomenda-se manter um backup regular do `etcd` para que seja possível recuperar o cluster de um desastre. Se você realizou a instalação do `etcd` conforme este exemplo, em três hosts diferentes, a recuperação do backup somente será necessária se TODAS as instâncias `etcd` forem perdidas. De modo geral, um cluster de três instâncias é capaz de perder um nó e continuar operando normalmente. Nós adicionais podem ser adicionados a qualquer momento de forma transparente.
+
+O Kubespray executa o `etcd` como um container independente fora do Kubernetes. No host Ubuntu, ele é configurado como um systemd service.
