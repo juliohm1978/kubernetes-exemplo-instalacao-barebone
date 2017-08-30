@@ -49,6 +49,12 @@ cd kubespray
 Faça uma cópia do arquivo `inventory/inventory.example` para montar o inventário com seus hosts.
 
 ```
+cp inventory/inventory.example inventory/inventory.txt
+```
+
+O conteúdo do inventário é simples e direto.
+
+```
 # ## Configure 'ip' variable to bind kubernetes services on a
 # ## different ip than the default iface
 node1 ansible_ssh_user=root ansible_ssh_host=node01 ip=x.x.x.x
