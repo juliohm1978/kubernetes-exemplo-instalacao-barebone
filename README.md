@@ -172,3 +172,51 @@ docker ps -qa | xargs docker rm
 
 > NOTA: Apesar de ser um container, o runtime do `etcd` é mantido essencialmente pelo systemd do Ubuntu. Não adianta parar o container apenas usando `docker stop etcd1`, pois ele será reiniciado pelo systemd.
 
+Em cada master, pare todas as instâncias do `etcd`.
+
+```
+service etcd stop
+```
+
+Escolha nó onde será feita a restauração do backup, ex: node1. Remova o diretório `/var/lib/etcd/members`, substituindo-o pelo backup.
+
+```
+rm -fr /var/lib/etcd/members
+cd /var/lib/etcd/
+tar -xzf /meu/backup.tgz 
+```
+
+Modifique o script `/usr/local/bin/etcd` adicionando a flag `--force-new-cluster` como parâmetro ao etcd.
+
+```
+ex
+```
+
+Reinicie o etcd e confira os logs do container para garantir que tudo deu certo.
+
+```
+service etcd restart
+docker logs -f etcd1
+```
+
+Remova a flag `--force-new-cluster` do arquivo `/usr/local/bin/etcd` e reinicie o etcd novamente.
+
+```
+service etcd restart
+```
+
+Se tudo deu certo, esta nova instância pensa que é um cluster de apenas um nó. Para montar o cluster completo, é preciso modificar sua propriedade *peer url* e adicionar os outros membros do cluster.
+
+```
+## confira os membros atuais do cluster
+docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member list
+
+## recupera o ID deste membro
+MID=$(docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member list | awk '{print $1}' | sed 's/://g')
+
+## modifica peer url de localhost para IP_NODE1
+docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member update $MID https://IP_NODE1:2380
+
+## adiciona membros do cluster
+docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member add etcd2 https://IP_NODE2:2380
+```
