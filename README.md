@@ -32,6 +32,10 @@ Ao final, você terá um cluster completo organizado da seguinte forma:
 
 Este guia também presume que cada host mencionado acima possui um nome resolvível na rede DNS local e IPs fixos, acessíveis diretamente entre si na mesma rede.
 
+## Antes de Começar
+
+Para um ambiente de testes, faça snapshots de suas VMs no estado inicial, apenas com o sistema operacional instalado e pronto para iniciar as atividades. Isto deve ajudar muito na hora de fazer experiências montando e desmontando seu cluster.
+
 ## Sistema Operacional dos Hosts
 
 Este guia usa o Ubuntu 16.04 LTS em todos os hosts. Pela natureza da solução de containers e Kubernetes, acredito que não deva encontrar maiores problemas usando outra distribuição conhecida do mercado. Confira a documentação do Kubespray para detalhes sobre distribuições suportadas.
@@ -154,7 +158,10 @@ Caso precise, também é possível remover tudo que foi instalado e recomeçar d
 ansible-playbook reset.yml -i inventory/inventory
 ```
 
-> **CUIDADO! Este comando remove TUDO. Sem um backup, todas as configurações e estado atual do cluster serão perdidos.** Isto inclui todos os containers que estiverem executando no momento, todos arquivos de configuração, toda a base de dados etcd e todos os certificados que foram criados para o cluster. Depois de executar um reset, Docker é único componente que permanece instalado.
+**ATENÇÃO: Este procedimento remove QUASE TUDO. Sem um backup, todas as configurações e estado atual do cluster serão perdidos.** Isto inclui todos os containers que estiverem executando no momento, todos arquivos de configuração, toda a base de dados etcd e todos os certificados que foram criados para o cluster.
+
+Note que o script `reset.yml` remove QUASE tudo. Docker é único componente que permanece instalado. Além dele, interfaces virtuais de rede que foram criadas para a comunicação do cluster também podem ficar ativas. O resultado é aleatório e imprevisível, podendo afetar e atrapalhar instalações subsequentes no mesmo ambiente. Para um ambiente limpo, retorne o snapshots de suas VMs para um ponto inicial antes de instalar qualquer componente.
+
 
 # Backup e Restauração
 
