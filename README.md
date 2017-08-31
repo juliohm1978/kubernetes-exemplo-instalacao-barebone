@@ -8,6 +8,7 @@ Todos os detalhes e conceitos sobre Kubernetes podem ser encontrados na document
 
 * [Kubernetes Anywhere](https://github.com/kubernetes/kubernetes-anywhere): Um guia detalhado de como instalar manualmente o Kubernetes no GCE ou AWS.
 * [Kubernetes on CoreOS](https://coreos.com/kubernetes/docs/latest/): Outro guia que, apesar de ser direcionado à solução proprietária da CoreOS, continua sendo uma fonte bem detalhada de todos os passos necessários para uma instalação manual.
+* [Documentação oficial do Kubernetes](https://kubernetes.io/docs/home/): Indispensável e sem comentários.
 
 # Pré-requisitos
 
