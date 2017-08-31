@@ -39,7 +39,11 @@ O Kubespray utiliza Ansible para relizar a instalação. Ele deve ser executado 
 
 Parte da configuração do Ansible envolve preparar todos os hosts do cluster para um acesso remoto sem senha. Será preciso configurá-los com uma chave ssh, dando **acesso remoto de sua estação como usuário root pela chave**. Confira [os diversos tutoriais pela Internet](https://www.google.com.br/search?q=ssh+chave+sem+senha&oq=ssh+chave+sem+senha&aqs=chrome..69i57j0l5.5311j0j9&sourceid=chrome&ie=UTF-8) sobre como fazer isso.
 
-Certifique-se, também, de que o Python está instalado nos hosts, pois o Ansible precisa dele para executar suas tarefas.
+Certifique-se, também, de que o Python está instalado nos hosts, pois o Ansible precisa dele para executar suas tarefas. Em um host Ubuntu, o comando abaixo deve ser o suficiente.
+
+```
+sudo apt-get install -y python
+```
 
 # Instalação Kubernetes
 
