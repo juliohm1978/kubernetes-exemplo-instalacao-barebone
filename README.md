@@ -62,7 +62,7 @@ cp inventory/inventory.example inventory/inventory.txt
 
 O conteúdo do inventário é simples e direto. Se o host possui mais de uma interface de rede, use a propriedade `ip=x.x.x.x` para especificar qual delas será usada. Atente para este valor, pois este será o IP usado para criar certificados e configurações dos componentes no cluster.
 
-> NOTA: Recomendo sempre configurar a propriedade `ip=x.x.x.x` para cada host. Parte deste processo envolve a instalação do Docker. Este componente cria novas interfaces de rede virtuais com IPs e redes variados. Pode ser imprevisível qual interface de rede será escolhida pelo Kubespray para configurar componentes que fazem comunicação entre os hosts.
+> NOTA: Recomendo sempre configurar a propriedade `ip=x.x.x.x` para cada host. Mesmo que seus hosts não tenham várias interfaces de rede, lembre-se de que parte deste processo envolve a instalação do Docker. Este componente cria novas interfaces de rede virtuais com IPs e redes variados. Pode ser imprevisível qual interface de rede será escolhida pelo Kubespray para configurar componentes que fazem comunicação entre os hosts.
 
 ```
 node1 ansible_ssh_user=root ansible_ssh_host=node01 ip=x.x.x.x
