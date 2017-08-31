@@ -37,7 +37,7 @@ Este guia usa o Ubuntu 16.04 LTS em todos os hosts. Pela natureza da solução d
 ## Ansible
 O Kubespray utiliza Ansible para relizar a instalação. Ele deve ser executado de sua estação de trabalho, instalando o Kubernetes remotamente via SSH. Assim, sua estação de trabalho precisa ter esta ferramenta instalada. Confira o [guia oficial de instalação do Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) antes de continuar. Ao momento, a versão mais recente 2.3.2.0 deve funcionar sem problemas, gerando apenas _warnings_ de incompatibilidade.
 
-Parte da configuração do Ansible envolve preparar todos os hosts do cluster para um acesso remoto sem senha. Será preciso configurá-los com uma chave ssh, dando **acesso remoto como usuário root pela chave**. Confira [os diversos tutoriais pela Internet](https://www.google.com.br/search?q=ssh+chave+sem+senha&oq=ssh+chave+sem+senha&aqs=chrome..69i57j0l5.5311j0j9&sourceid=chrome&ie=UTF-8) sobre como fazer isso.
+Parte da configuração do Ansible envolve preparar todos os hosts do cluster para um acesso remoto sem senha. Será preciso configurá-los com uma chave ssh, dando **acesso remoto de sua estação como usuário root pela chave**. Confira [os diversos tutoriais pela Internet](https://www.google.com.br/search?q=ssh+chave+sem+senha&oq=ssh+chave+sem+senha&aqs=chrome..69i57j0l5.5311j0j9&sourceid=chrome&ie=UTF-8) sobre como fazer isso.
 
 Certifique-se, também, de que o Python está instalado nos hosts, pois o Ansible precisa dele para executar suas tarefas.
 
