@@ -169,7 +169,7 @@ Seja qual for a opção, antes de tudo, é preciso ter um backup.
 
 ## Backup do /etc/kubernetes
 
-Este diretório possui todos os certificados e configurações internas do cluster. Cada host (master ou worker) possui um diretório `/etc/kubernetes` próprio. Em especial, uma cópia de backup para cada master é essencial para recuperar uma eventual perda.
+Este diretório possui todos os certificados e configurações internas do cluster. Cada host (master ou worker) possui um diretório `/etc/kubernetes` próprio. Em especial, uma cópia de backup para cada master é essencial para recuperar uma eventual corrupção dos dados.
 
 O backup deste diretório dos workers não se mostra tão necessário, pois este tipo de host pode ser facilmente recriado executando o playbook `cluster.yml` novamente.
 
