@@ -316,6 +316,10 @@ Neste ponto, caso queira garantir um ambiente renovado, faça o reboot de todos 
 
 Outra forma de backup que pode ser útil é fazer um dump completo de todos os objetos que foram criados no Kubernetes (service accounts, persistente volumes, services, deployments, pods, secrets, configmaps, etc).
 
-A princípio, espera-se que uma cópia destes objetos esteja disponível a partir do provisionamento das aplicações e serviços no cluster. Entretanto, a recuperação pode ser mais rápida se um dump completo estiver disponível.
+A princípio, espera-se que uma cópia destes objetos já esteja disponível a partir do provisionamento das aplicações e serviços no cluster. Entretanto, a recuperação pode ser mais rápida a partir de um dump completo.
+
+Ao contrário dos procedimentos anteriores mencionados, recuperando um desastre parcial, este envolve criar um cluster completamente novo e restaurar um backup de todos os ojetos Kubernetes no cluster. Pode ser visto como um *export/import* das configurações, criando uma cópia do cluster existente.
+
+
 
 ## Restauração a Partir de um Dump
