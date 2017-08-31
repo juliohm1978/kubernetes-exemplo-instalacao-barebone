@@ -329,6 +329,8 @@ Ao contrário dos procedimentos anteriores mencionados, recuperando o cluster de
 
 O script bash [`dump-cluster.sh`](dump-cluster.sh) é baseado nos [exemplos da CoreOS](https://github.com/coreos/docs/blob/master/kubernetes/cluster-dump-restore.md) e pode ser executado para criar dump completo. Ele cria um diretório `cluster-dump` e exporta todos os objetos em formato JSON.
 
+> NOTA: Um pré-requisito do script de dump é a ferramente [jq](https://stedolan.github.io/jq/). Para instalar no Ubuntu, basta executar `apt-get install -y jq`
+
 Para usar o script:
 
 ```
