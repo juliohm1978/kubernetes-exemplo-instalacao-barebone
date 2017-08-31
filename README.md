@@ -13,9 +13,9 @@ Todos os detalhes e conceitos sobre Kubernetes podem ser encontrados na document
 
 O Kubespray suporta uma variedade de topologias. Com ele, é possível instalar o Kubernetes dentro de um único host, algo que pode ser útil para criar um pequeno ambiente de testes. Para criar uma topologia diferente e adicionar novos hosts, basta modifiar o seu inventário Ansible antes de iniciar a instalação. Mesmo depois de instalado, o cluster pode crescer executando a instalação novamente com um inventário atualizado.
 
-Para mostrar um exemplo completo, usaremos um total de 6 (seis) máquinas virtuais. Este guia presume que as VMs já foram criadas e configuradas com algum sistema operacional suportado pelo Kubespray.
+Para mostrar um exemplo completo, um total de 6 (seis) máquinas virtuais será usado. Este guia presume que as VMs já foram criadas e configuradas com algum sistema operacional suportado pelo Kubespray.
 
-Ao final, teremos um cluster completo organizado da seguinte forma:
+Ao final, você terá um cluster completo organizado da seguinte forma:
 
 | Host     | Papél no Cluster |
 | -------- | -------- |
@@ -26,9 +26,9 @@ Ao final, teremos um cluster completo organizado da seguinte forma:
 | node05   | Worker |
 | node06   | Worker |
 
-> NOTA: Neste exemplo, as instâncias etcd serão instaladas nos mesmos hosts que serão masters do Kubernetes. Entretanto, isto não é necessário e, em uma estrutura ainda maior, hosts exclusivos podem ser dedicados ao etcd. Apesar de ser um componente crítico, sua atualização pode ser feita de forma independete do restante do Kubernetes.
+> NOTA: Neste exemplo, as instâncias etcd serão instaladas nos mesmos hosts que serão masters do Kubernetes. Entretanto, isto não é necessário. Em uma estrutura ainda maior, hosts exclusivos podem ser dedicados ao etcd. Apesar de ser um componente crítico, sua atualização pode ser feita de forma independete do restante do Kubernetes.
 
-Este guia também presume que cada host mencionado acima possui um nome resolvível na rede DNS local e um IP fixo publicamente acessível nesta mesma rede.
+Este guia também presume que cada host mencionado acima possui um nome resolvível na rede DNS local e IPs fixos, acessíveis diretamente entre si na mesma rede.
 
 ## Sistema Operacional dos Hosts
 
@@ -137,28 +137,28 @@ Caso precise, também é possível remover tudo que foi instalado e recomeçar d
 ansible-playbook reset.yml -i inventory/inventory
 ```
 
-**CUIDADO! Este comando remove TUDO. Sem um backup, todas as configurações e estado atual do cluster será perdido.** Isto inclui todos os containers que estiverem executando no momento, todos arquivos de configuração, toda a base de dados etcd e todos os certificados que foram criados para o cluster. Depois de executar um reset, Docker é único componente que permanece instalado.
+> **CUIDADO! Este comando remove TUDO. Sem um backup, todas as configurações e estado atual do cluster serão perdidos.** Isto inclui todos os containers que estiverem executando no momento, todos arquivos de configuração, toda a base de dados etcd e todos os certificados que foram criados para o cluster. Depois de executar um reset, Docker é único componente que permanece instalado.
 
 # Backup
 
-Com o tempo, você acabará criando vários objetos do tipo Service, Deployment, DaemonSet, Ingress, etc. Todos estes objetos são armazenados no banco `etcd`, que representa o estado atual do cluster.
+Com o tempo, você acabará criando vários objetos do tipo Service, Deployment, DaemonSet, Ingress, etc. Todos os objetos Kubernetes são armazenados no banco `etcd`, que representa o estado atual do cluster.
 
-Com base em diversas experiências que foram feitas, chegou-se à conclusão de que existem duas formas de recuperação do cluster em caso de algum desastre.
+Com base em diversas experiências que foram feitas, encontramos duas formas de recuperação do cluster no caso de um desastre.
 
-1. Criar um novo cluster e recriar todos os objetos.
-2. Recuperar um cluster parcialmente danificado.
+1. Recuperar um cluster parcialmente danificado.
+2. Criar um novo cluster e recriar todos os objetos.
 
 Seja qual for a opção, antes de tudo, é preciso ter um backup.
 
 ## Considerações Sobre o Etcd
 
-A instalação feita pelo Kubespray prepara o Kubernetes para usar o primeiro nó etcd como primário e os demais como *failover* quando houver falha na comunicação.
+A instalação feita pelo Kubespray prepara o Kubernetes para usar o primeiro nó etcd como primário e os demais como *failover*.
 
-De modo geral, um cluster etcd de três instâncias é capaz de perder um nó e continuar operando normalmente. Ao perder dois de três nós, ele para de funcionar, mas ainda pode ser facilmente recuperado. Nós adicionais podem ser adicionados a qualquer momento para replicar a base de dados. Esta é uma tarefa relativamente simples com o Kubespray, pois basta executar o playbook `cluster.yml` novamente com um inventário modificado.
+De modo geral, um cluster etcd de três instâncias é capaz de perder um nó e continuar operando normalmente. Ao perder dois nós, ele para de funcionar, mas ainda pode ser facilmente recuperado. Nós adicionais podem ser adicionados a qualquer momento para replicar a base de dados. Esta é uma tarefa relativamente simples com o Kubespray, pois basta executar o playbook `cluster.yml` novamente com um inventário modificado.
 
 Por baixo dos panos, o etcd executa dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando o diretório de dados e configuração como volumes.
 
-A partir do host, os parâmetros passados ao etcd ficam em `/etc/etcd.env` ou diretamente no arquio `/usr/local/bin/etcd`. Ao modificar estes arquivos, basta reiniciar o serviço.
+A partir do host, os parâmetros passados ao etcd ficam em `/etc/etcd.env` ou diretamente no arquivo `/usr/local/bin/etcd`. Ao modificar estes arquivos, basta reiniciar o serviço.
 
 ```
 service etcd restart
@@ -189,9 +189,9 @@ O backup parece simples, mas uma eventual restauração é mais complicada.
 Como dito anteriormente, isto deve ser necessário somente quando:
 
 * Houve um desastre completo e todas as instâncias etcd foram perdidas.
-* Uma versão da base corrompida foi replicada para todo o cluster.
+* Uma versão corrompida da base foi replicada para todo o cluster.
 
-> NOTA: Vale lembrar que o Kubernetes é preparado para ser o mais resiliente possível. Hosts do tipo worker estão sempre tentando manter o estado atual dos serviços, pods e containers. Ao desligar todos os masters, perde-se a capacidade de modificar os objetos do cluster. Apesar disso, o que já estiver funcionando no cluster deve continuar funcionando.
+> NOTA: Vale lembrar que o Kubernetes é preparado para ser o mais resiliente possível. Hosts do tipo worker estão sempre tentando manter seus containers funcionando. Ao desligar todos os masters, perde-se a capacidade de modificar os objetos do cluster. Apesar disso, o que já estiver funcionando no cluster deve continuar funcionando.
 
 Antes de iniciar uma restauração, recomenda-se fazer uma parada completa do conjunto master do cluster.
 
@@ -199,10 +199,6 @@ Em cada master, desligue o kubelet para evitar que ele atue reiniciando containe
 
 ```
 service kubelet stop
-
-## opcional: limpa todos os containers
-docker ps -q | xargs docker stop
-docker ps -qa | xargs docker rm
 ```
 
 Em cada master, pare todas as instâncias do etcd.
@@ -211,7 +207,7 @@ Em cada master, pare todas as instâncias do etcd.
 service etcd stop
 ```
 
-Escolha nó etcd onde será feita a restauração do backup, ex: node1.
+Escolha nó onde será feita a restauração do backup, ex: node1.
 
 Remova o diretório atual `/var/lib/etcd/members`, substituindo-o pelo backup.
 
@@ -269,5 +265,25 @@ docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member update $MID h
 
 ## adiciona os demais membros do cluster
 docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member add etcd2 https://IP_NODE2:2380
+
+docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member add etcd3 https://IP_NODE3:2380
+```
+
+Somente depois de adicionados todos os membros, podemos reiniciar o etcd nos demais hosts.
+
+```
+## restart do etcd nos demais hosts
+
+root@node2:~# service etcd restart
+
+root@node3:~# service etcd restart
+```
+
+Por desencargo, confira os logs do etcd para garantir que o cluster foi corretamente iniciado. Será possível ver mensagens referentes à eleição de um novo líder.
+
+Por fim, lembre-se de reiniciar o kubelet em cada master:
+
+```
+service kubelet restart
 ```
 
