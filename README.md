@@ -139,7 +139,7 @@ ansible-playbook reset.yml -i inventory/inventory
 
 > **CUIDADO! Este comando remove TUDO. Sem um backup, todas as configurações e estado atual do cluster serão perdidos.** Isto inclui todos os containers que estiverem executando no momento, todos arquivos de configuração, toda a base de dados etcd e todos os certificados que foram criados para o cluster. Depois de executar um reset, Docker é único componente que permanece instalado.
 
-# Backup
+# Backup e Restauração
 
 Com o tempo, você acabará criando vários objetos do tipo Service, Deployment, DaemonSet, Ingress, etc. Todos os objetos Kubernetes são armazenados no banco `etcd`, que representa o estado atual do cluster.
 
@@ -181,6 +181,10 @@ docker exec -it etcd1 tar -czf /tmp/backup.tgz /backup
 ## copia backup para fora
 docker cp etcd1:/tmp/backup.tgz /algum/lugar/seguro/
 ```
+
+## Backup do /etc/kubernetes
+
+Este diretório possui todos os certificados e configurações internas do cluster. Uma cópia de backup é essencial para recuperar uma eventual perda de um master.
 
 ## Restauração do Etcd
 
@@ -287,3 +291,12 @@ Por fim, lembre-se de reiniciar o kubelet em cada master:
 service kubelet restart
 ```
 
+Neste ponto, caso queira garantir um ambiente renovado, faça o reboot de todos os masters, ou aguarde até todos os componentes do Kubernetes se recuperarem.
+
+## Dump Completo dos Objetos
+
+Outra forma de backup que pode ser útil é fazer um dump completo de todos os objetos que foram criados no Kubernetes (service accounts, persistente volumes, services, deployments, pods, secrets, configmaps, etc).
+
+A princípio, espera-se que uma cópia destes objetos esteja disponível a partir do provisionamento das aplicações e serviços no cluster. Entretanto, a recuperação pode ser mais rápida se um dump completo estiver disponível.
+
+## Restauração a Partir de um Dump
