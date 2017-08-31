@@ -370,7 +370,7 @@ O script também ignora propriedades voláteis, como UIDs, resourceVersion, crea
 
 Objetos do tipo **Pod** e **ReplicaSet** não são incluídos. Como são voláteis e gerenciados pelos Deployments/ReplicationControllers/StatefulSets, não há muita necessidade de serem exportados. Devem ser recriados automaticamente quando o backup for importado em um novo ambiente.
 
-Já os objetos do tipo **Node** são colocados em um arquivo separado por um bom motivo. Um novo cluster onde os objetos serão importados pode não ter a mesma topologia, ou sequer a mesma quantidade de hosts com os mesmos nomes e IPs. Entretanto, algumas informações podem estar contidas nestes objetos que afetam os serviços e aplicações -- por exemplo, alguns hosts podem ter labels e annotations que restringem quais pods podem ser executados, definindo seu papél no cluster. O arquivo `nodes.js` deve dispor estas informações e no pior dos casos, ela serve de referência para recriar o ambiente.
+Já os objetos do tipo **Node** são colocados em um arquivo separado por um bom motivo. Um novo cluster onde os objetos serão importados pode não ter a mesma topologia, ou sequer a mesma quantidade de hosts com os mesmos nomes e IPs. Entretanto, algumas informações podem estar contidas nestes objetos que afetam os serviços e aplicações -- por exemplo, alguns hosts podem ter labels e annotations que restringem quais pods podem ser executados, definindo seu papél no cluster. O arquivo `nodes.js` deve dispor estas informações. No pior dos casos, pode servir de referência para recriar o ambiente.
 
 ## Restauração a Partir de um Dump
 
