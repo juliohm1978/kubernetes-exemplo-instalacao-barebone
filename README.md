@@ -1,17 +1,21 @@
 # Introdução
 
-Este repositório pretende hospedar um exemplo completo de uma instalação Kubernetes em barebone na língua portuguesa. Isto deve ajudar analistas e desenvolvedores a criar um cluster Kubernetes do zero usando a ferramenta [Kubespray](https://github.com/kubernetes-incubator/kubespray).
+Este repositório pretende hospedar um exemplo completo de uma instalação Kubernetes em barebone na língua portuguesa. Isto deve ajudar analistas e desenvolvedores a criar um cluster Kubernetes em uma infraestrutura própria usando a ferramenta [Kubespray](https://github.com/kubernetes-incubator/kubespray).
 
-Para instalações menores, o [kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/) funciona muito bem. Entretanto, não há suporte para um cluster de alta disponibilidade (HA); o kubeadm sabe instalar somente um master com apenas uma instância `etcd`. Vários exemplos podem ser encontrados na Internet mostrando a instalação do Kubernetes no GCE ou AWS. Caso você precise fazer isso em sua própria infraestrutura (barebone), minha experiência pessoal tem mostrado o Kubespray como a melhor ferramenta.
+Para instalações menores, o [kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/) funciona muito bem. Muitos exemplos e tutoriais já existem. Entretanto, kubeadm não suporta um cluster de alta disponibilidade (HA); consegue instalar somente um master com apenas uma instância etcd. Ademais, vários exemplos podem ser encontrados mostrando a instalação do Kubernetes no GCE ou AWS. Caso você precise fazer isso em sua própria infraestrutura (barebone), minha experiência pessoal tem mostrado o Kubespray como a melhor ferramenta.
 
-Detalhes sobre conceitos e o funcionamento do Kubernetes podem ser encontrados na documentação oficial (https://kubernetes.io/docs/home/), cuja leitura completa é recomendada antes de iniciar atividades práticas. Outras fontes recomendadas incluem:
+Todos os detalhes e conceitos sobre Kubernetes podem ser encontrados na documentação oficial (https://kubernetes.io/docs/home/), cuja leitura completa é recomendada antes de iniciar atividades práticas. Outras fontes recomendadas incluem:
 
 * [Kubernetes Anywhere](https://github.com/kubernetes/kubernetes-anywhere): Um guia detalhado de como instalar manualmente o Kubernetes no GCE ou AWS.
 * [Kubernetes on CoreOS](https://coreos.com/kubernetes/docs/latest/): Outro guia que, apesar de ser direcionado à solução proprietária da CoreOS, continua sendo uma fonte bem detalhada de todos os passos necessários para uma instalação manual.
 
 # Pré-requisitos
 
-Para mostrar um exemplo completo, presume-se a existência de 6 (seis) máquinas virtuais já criadas e configuradas. Com esta quantidade, teremos um cluster completo organizado da seguinte forma:
+O Kubespray suporta uma variedade de topologias. Com ele, é possível instalar o Kubernetes dentro de um único host, algo que pode ser útil para criar um pequeno ambiente de testes. Para criar uma topologia diferente e adicionar novos hosts, basta modifiar o seu inventário Ansible antes de iniciar a instalação. Mesmo depois de instalado, o cluster pode crescer executando a instalação novamente com um inventário atualizado.
+
+Para mostrar um exemplo completo, usaremos um total de 6 (seis) máquinas virtuais. Este guia presume que as VMs já foram criadas e configuradas com algum sistema operacional suportado pelo Kubespray.
+
+Ao final, teremos um cluster completo organizado da seguinte forma:
 
 | Host     | Papél no Cluster |
 | -------- | -------- |
@@ -22,41 +26,39 @@ Para mostrar um exemplo completo, presume-se a existência de 6 (seis) máquinas
 | node05   | Worker |
 | node06   | Worker |
 
-Se necessário à sua infraestrutura, um número menor ou maior pode ser usado. O Kubespray suporta, inclusive, instalar um cluster com apenas um host, similar ao kubeadm.
+> NOTA: Neste exemplo, as instâncias etcd serão instaladas nos mesmos hosts que serão masters do Kubernetes. Entretanto, isto não é necessário e, em uma estrutura ainda maior, hosts exclusivos podem ser dedicados ao etcd. Apesar de ser um componente crítico, sua atualização pode ser feita de forma independete do restante do Kubernetes.
 
 Este guia também presume que cada host mencionado acima possui um nome resolvível na rede DNS local e um IP fixo publicamente acessível nesta mesma rede.
 
-## Sistema Operacional do Host
+## Sistema Operacional dos Hosts
 
 Este guia usa o Ubuntu 16.04 LTS em todos os hosts. Pela natureza da solução de containers e Kubernetes, acredito que não deva encontrar maiores problemas usando outra distribuição conhecida do mercado. Confira a documentação do Kubespray para detalhes sobre distribuições suportadas.
 
 ## Ansible
-O Kubespray utiliza Ansible para relizar a instalação. Ele deve ser executado de sua estação de trabalho, instalando o Kubernetes remotamente via SSH. Assim, sua estação de trabalho precisa ter esta ferramenta instalada. Confira detalhes no [guia oficial de instalação do Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html). Ao momento, a versão mais recente 2.3.2.0 deve funcionar sem problemas, gerando apenas _warnings_ de incompatibilidade.
+O Kubespray utiliza Ansible para relizar a instalação. Ele deve ser executado de sua estação de trabalho, instalando o Kubernetes remotamente via SSH. Assim, sua estação de trabalho precisa ter esta ferramenta instalada. Confira o [guia oficial de instalação do Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) antes de continuar. Ao momento, a versão mais recente 2.3.2.0 deve funcionar sem problemas, gerando apenas _warnings_ de incompatibilidade.
 
-Parte da configuração do Ansible envolve preparar cada host do cluster para um acesso remoto sem senha. Será preciso configurar todos com uma chave ssh, dando **acesso remoto como usuário root pela chave**. Confira [os diversos tutoriais pela Internet](https://www.google.com.br/search?q=ssh+chave+sem+senha&oq=ssh+chave+sem+senha&aqs=chrome..69i57j0l5.5311j0j9&sourceid=chrome&ie=UTF-8) sobre como fazer isso.
+Parte da configuração do Ansible envolve preparar todos os hosts do cluster para um acesso remoto sem senha. Será preciso configurá-los com uma chave ssh, dando **acesso remoto como usuário root pela chave**. Confira [os diversos tutoriais pela Internet](https://www.google.com.br/search?q=ssh+chave+sem+senha&oq=ssh+chave+sem+senha&aqs=chrome..69i57j0l5.5311j0j9&sourceid=chrome&ie=UTF-8) sobre como fazer isso.
 
-Certifique-se, também, de que o Python está instalado em todos os hosts, pois o Ansible precisa dele para executar suas tarefas.
+Certifique-se, também, de que o Python está instalado nos hosts, pois o Ansible precisa dele para executar suas tarefas.
 
 # Instalação Kubernetes
 
-Faça o download do Kubespray para sua estação de trabalho.
+Faça o download do Kubespray na sua estação de trabalho.
 
 ```
 git clone https://github.com/kubernetes-incubator/kubespray.git
 cd kubespray
 ```
 
-Faça uma cópia do arquivo `inventory/inventory.example` para montar o inventário com seus hosts.
+Faça uma cópia do arquivo `inventory/inventory.example` para montar um inventário com seus hosts.
 
 ```
 cp inventory/inventory.example inventory/inventory.txt
 ```
 
-O conteúdo do inventário é simples e direto. Se o host possui mais de uma interface de rede, use a propriedade `ip=x.x.x.x` para especificar qual delas será usada. Este IP será usado para criar certificados e configurações de componentes no cluster.
+O conteúdo do inventário é simples e direto. Se o host possui mais de uma interface de rede, use a propriedade `ip=x.x.x.x` para especificar qual delas será usada. Atente para este valor, pois este será o IP usado para criar certificados e configurações dos componentes no cluster.
 
 ```
-# ## Configure 'ip' variable to bind kubernetes services on a
-# ## different ip than the default iface
 node1 ansible_ssh_user=root ansible_ssh_host=node01 ip=x.x.x.x
 node2 ansible_ssh_user=root ansible_ssh_host=node02 ip=x.x.x.x
 node3 ansible_ssh_user=root ansible_ssh_host=node03 ip=x.x.x.x
@@ -86,13 +88,15 @@ kube-master
 
 Faça uma revisão completa do arquivo `inventory/group_vars/k8s-cluster.yml` e modifique valores que fazem sentido para sua estrutura. Nele, estão os parâmetros gerais da instalação, como versão do kubernetes, versão de cada componente, plugin de rede que será usado (weave, flannel, calico), range de IPs de pods e serviços dentro do cluster e muito mais.
 
-Com tudo pronto, basta executar o script `cluster.yml`.
+> NOTA: O Kubespray vem melhorando constantemente, mas alguns valores menos conhecidos da configuração do cluster talvez não estejam disponíveis diretamente pelo arquivo `k8s-cluster.yml`. Hoje, os parâmetos já são bem abrangentes. Caso precise de algum outro valor customizado e tenha experiência editando playbooks do Ansible, confira os scripts dentro do diretório `roles` para controlar todos os detalhes da instalação de cada componente. Mas, cuidado! Não há garantias de que tudo funcione bem com este nível de customização.
+
+Com tudo pronto, basta executar o playbook `cluster.yml`.
 
 ```
 ansible-playbook cluster.yml -i inventory/inventory.txt
 ```
 
-A instalação pode demorar alguns minutos, mas deve fazer todo trabalho sem erros. Ao final (depois de muitas e muitas vaquinhas) um resumo será apresentado.
+A instalação deve demorar alguns minutos, mas deve fazer todo trabalho. Ao final (depois de muitas e muitas vaquinhas) um resumo será apresentado.
 
 ```
 Wednesday 30 August 2017  13:50:31 -0300 (0:00:00.038)       0:09:54.442 ****** 
@@ -119,7 +123,11 @@ kubernetes/master : Copy kubectl from hyperkube container --------------- 3.11s
 kubernetes/secrets : Check certs | check if a cert already exists on node --- 2.97s
 ```
 
-Se tudo foi como esperado, seu cluster está pronto para ser usado. 
+Se tudo deu certo, seu cluster está pronto para ser usado. No console de um master, confira os pods do sistema:
+
+```
+kubectl get pods --all-namespaces
+```
 
 # Desinstalação
 
@@ -129,67 +137,109 @@ Caso precise, também é possível remover tudo que foi instalado e recomeçar d
 ansible-playbook reset.yml -i inventory/inventory
 ```
 
-**CUIDADO! Este comando remove TUDO. Sem um backup, todas as configurações e estado atual do cluster será perdido.**
+**CUIDADO! Este comando remove TUDO. Sem um backup, todas as configurações e estado atual do cluster será perdido.** Isto inclui todos os containers que estiverem executando no momento, todos arquivos de configuração, toda a base de dados etcd e todos os certificados que foram criados para o cluster. Depois de executar um reset, Docker é único componente que permanece instalado.
 
 # Backup
 
 Com o tempo, você acabará criando vários objetos do tipo Service, Deployment, DaemonSet, Ingress, etc. Todos estes objetos são armazenados no banco `etcd`, que representa o estado atual do cluster.
 
-## Backup do Etcd
+Com base em diversas experiências que foram feitas, chegou-se à conclusão de que existem duas formas de recuperação do cluster em caso de algum desastre.
 
-Recomenda-se manter um backup regular do `etcd` para que seja possível recuperar o cluster de um desastre. Se você realizou a instalação do `etcd` conforme este exemplo, em três hosts diferentes, a recuperação do backup somente será necessária se TODAS as instâncias `etcd` forem perdidas. De modo geral, um cluster de três instâncias é capaz de perder um nó e continuar operando normalmente. Nós adicionais podem ser adicionados a qualquer momento de forma transparente.
+1. Criar um novo cluster e recriar todos os objetos.
+2. Recuperar um cluster parcialmente danificado.
 
-O Kubespray executa o `etcd` como um container privilegiado independente fora do Kubernetes. No host Ubuntu, ele é configurado como um systemd service. Os parâmetros do container ficam em `/etc/etcd.env` ou diretamente no script `/usr/local/bin/etcd`. Ao modificar estes arquivos, basta reiniciar o serviço.
+Seja qual for a opção, antes de tudo, é preciso ter um backup.
+
+## Considerações Sobre o Etcd
+
+A instalação feita pelo Kubespray prepara o Kubernetes para usar o primeiro nó etcd como primário e os demais como *failover* quando houver falha na comunicação.
+
+De modo geral, um cluster etcd de três instâncias é capaz de perder um nó e continuar operando normalmente. Ao perder dois de três nós, ele para de funcionar, mas ainda pode ser facilmente recuperado. Nós adicionais podem ser adicionados a qualquer momento para replicar a base de dados. Esta é uma tarefa relativamente simples com o Kubespray, pois basta executar o playbook `cluster.yml` novamente com um inventário modificado.
+
+Por baixo dos panos, o etcd executa dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando o diretório de dados e configuração como volumes.
+
+A partir do host, os parâmetros passados ao etcd ficam em `/etc/etcd.env` ou diretamente no arquio `/usr/local/bin/etcd`. Ao modificar estes arquivos, basta reiniciar o serviço.
 
 ```
 service etcd restart
 ```
 
+## Backup do Etcd
+
 Para fazer um backup, é preciso usar a ferramenta `etcdctl` de dentro do container e depois copiar o backup para fora.
 
 ```
+## cria backup
 docker exec etcd1 etcdctl --endpoints https://IP_DO_HOST:2379 backup --data-dir /var/lib/etcd --backup-dir /backup
-docker cp etcd1:/var/lib/etcd/member/snap/db /tmp/backup/member/snap/
-docker cp etcd1:/backup /tmp/
-```
 
-Com isso, o backup estará no diretório `/tmp/backup` do host.
+## complementa backup com o snapshot atual (pegadinha do Faustão)
+docker cp etcd1:/var/lib/etcd/member/snap/db /backup/member/snap/
+
+## compacta o backup (ainda dentro do container)
+docker exec -it etcd1 tar -czf /tmp/backup.tgz /backup
+
+## copia backup para fora
+docker cp etcd1:/tmp/backup.tgz /algum/lugar/seguro/
+```
 
 ## Restauração do Etcd
 
-Apesar do backup simplificado, uma eventual restauração é mais complicada. Como dito anteriormente, isto deve ser necessário somente no caso de um deastre completo, onde todas as instâncias foram perdidas. Um desastre parcial pode ser facilmente recuperado apenas incluindo outro nó `etcd` no cluster.
+O backup parece simples, mas uma eventual restauração é mais complicada.
 
-Antes de iniciar uma restauração, recomenda-se fazer uma para completa do cluster. Em cada host:
+Como dito anteriormente, isto deve ser necessário somente quando:
+
+* Houve um desastre completo e todas as instâncias etcd foram perdidas.
+* Uma versão da base corrompida foi replicada para todo o cluster.
+
+> NOTA: Vale lembrar que o Kubernetes é preparado para ser o mais resiliente possível. Hosts do tipo worker estão sempre tentando manter o estado atual dos serviços, pods e containers. Ao desligar todos os masters, perde-se a capacidade de modificar os objetos do cluster. Apesar disso, o que já estiver funcionando no cluster deve continuar funcionando.
+
+Antes de iniciar uma restauração, recomenda-se fazer uma parada completa do conjunto master do cluster.
+
+Em cada master, desligue o kubelet para evitar que ele atue reiniciando containers locais.
 
 ```
-## evita que o kubelet fique tentando reiniciar containers
 service kubelet stop
 
-## opcional: limpa todos os containers, deixa serem recriados
+## opcional: limpa todos os containers
 docker ps -q | xargs docker stop
 docker ps -qa | xargs docker rm
 ```
 
-> NOTA: Apesar de ser um container, o runtime do `etcd` é mantido essencialmente pelo systemd do Ubuntu. Não adianta parar o container apenas usando `docker stop etcd1`, pois ele será reiniciado pelo systemd.
-
-Em cada master, pare todas as instâncias do `etcd`.
+Em cada master, pare todas as instâncias do etcd.
 
 ```
 service etcd stop
 ```
 
-Escolha nó onde será feita a restauração do backup, ex: node1. Remova o diretório `/var/lib/etcd/members`, substituindo-o pelo backup.
+Escolha nó etcd onde será feita a restauração do backup, ex: node1.
+
+Remova o diretório atual `/var/lib/etcd/members`, substituindo-o pelo backup.
 
 ```
 rm -fr /var/lib/etcd/members
 cd /var/lib/etcd/
-tar -xzf /meu/backup.tgz 
+tar -xzf /caminho/para/meu/backup.tgz 
 ```
 
-Modifique o script `/usr/local/bin/etcd` adicionando a flag `--force-new-cluster` como parâmetro ao etcd.
+Modifique o script `/usr/local/bin/etcd` adicionando a flag `--force-new-cluster` como parâmetro ao etcd, conforme o exemplo abaixo:
 
 ```
-ex
+#!/bin/bash
+/usr/bin/docker run \
+  --restart=on-failure:5 \
+  --env-file=/etc/etcd.env \
+  --net=host \
+  -v /etc/ssl/certs:/etc/ssl/certs:ro \
+  -v /etc/ssl/etcd/ssl:/etc/ssl/etcd/ssl:ro \
+  -v /var/lib/etcd:/var/lib/etcd:rw \
+    --memory=512M \
+      --name=etcd1 \
+  quay.io/coreos/etcd:v3.2.4 \
+    /usr/local/bin/etcd \
+    \
+    --force-new-cluster \
+    \
+    "$@"
 ```
 
 Reinicie o etcd e confira os logs do container para garantir que tudo deu certo.
@@ -205,18 +255,19 @@ Remova a flag `--force-new-cluster` do arquivo `/usr/local/bin/etcd` e reinicie 
 service etcd restart
 ```
 
-Se tudo deu certo, esta nova instância pensa que é um cluster de apenas um nó. Para montar o cluster completo, é preciso modificar sua propriedade *peer url* e adicionar os outros membros do cluster.
+Se tudo deu certo, esta nova instância pensa que é um cluster de apenas um nó. Antes de adicionar outros membros, é preciso modificar sua propriedade *peer url*.
 
 ```
 ## confira os membros atuais do cluster
 docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member list
 
-## recupera o ID deste membro
+## recupera o ID deste membro (etcd1)
 MID=$(docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member list | awk '{print $1}' | sed 's/://g')
 
 ## modifica peer url de localhost para IP_NODE1
 docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member update $MID https://IP_NODE1:2380
 
-## adiciona membros do cluster
+## adiciona os demais membros do cluster
 docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member add etcd2 https://IP_NODE2:2380
 ```
+
