@@ -129,6 +129,13 @@ Se tudo deu certo, seu cluster está pronto para ser usado. No console de um mas
 kubectl get pods --all-namespaces
 ```
 
+Para aumentar o diminuir a quantidade de hosts no cluster, utilize o playbook `scale.yml`
+
+```
+ansible-playbook scale.yml -i inventory/inventory.txt
+```
+
+
 # Desinstalação
 
 Caso precise, também é possível remover tudo que foi instalado e recomeçar do zero.
@@ -150,11 +157,17 @@ Com base em diversas experiências que foram feitas, encontramos duas formas de 
 
 Seja qual for a opção, antes de tudo, é preciso ter um backup.
 
+## Backup do /etc/kubernetes
+
+Este diretório possui todos os certificados e configurações internas do cluster. Cada host (master ou worker) possui um diretório `/etc/kubernetes` próprio. Em especial, uma cópia de backup para cada master é essencial para recuperar uma eventual perda.
+
+O backup deste diretório dos workers não se mostra tão necessário, pois este tipo de host pode ser facilmente recriado executando o playbook `cluster.yml` novamente.
+
 ## Considerações Sobre o Etcd
 
 A instalação feita pelo Kubespray prepara o Kubernetes para usar o primeiro nó etcd como primário e os demais como *failover*.
 
-De modo geral, um cluster etcd de três instâncias é capaz de perder um nó e continuar operando normalmente. Ao perder dois nós, ele para de funcionar, mas ainda pode ser facilmente recuperado. Nós adicionais podem ser adicionados a qualquer momento para replicar a base de dados. Esta é uma tarefa relativamente simples com o Kubespray, pois basta executar o playbook `cluster.yml` novamente com um inventário modificado.
+De modo geral, um cluster etcd de três instâncias é capaz de perder um nó e continuar operando normalmente. Ao perder dois nós, ele para de funcionar, mas ainda pode ser facilmente recuperado. Nós adicionais podem ser adicionados a qualquer momento para replicar a base de dados. Esta é uma tarefa relativamente simples com o Kubespray, pois basta executar o playbook `cluster.yml` novamente com um inventário ajustado.
 
 Por baixo dos panos, o etcd executa dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando o diretório de dados e configuração como volumes.
 
@@ -182,10 +195,6 @@ docker exec -it etcd1 tar -czf /tmp/backup.tgz /backup
 docker cp etcd1:/tmp/backup.tgz /algum/lugar/seguro/
 ```
 
-## Backup do /etc/kubernetes
-
-Este diretório possui todos os certificados e configurações internas do cluster. Uma cópia de backup é essencial para recuperar uma eventual perda de um master.
-
 ## Restauração do Etcd
 
 O backup parece simples, mas uma eventual restauração é mais complicada.
@@ -211,7 +220,7 @@ Em cada master, pare todas as instâncias do etcd.
 service etcd stop
 ```
 
-Escolha nó onde será feita a restauração do backup, ex: node1.
+Escolha um nó onde será feita a restauração do backup, ex: node1.
 
 Remova o diretório atual `/var/lib/etcd/members`, substituindo-o pelo backup.
 
@@ -273,13 +282,13 @@ docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member add etcd2 htt
 docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member add etcd3 https://IP_NODE3:2380
 ```
 
-Somente depois de adicionados todos os membros, podemos reiniciar o etcd nos demais hosts.
+Somente depois de adicionados todos os membros, podemos reiniciar o etcd nos demais hosts, lembrando de remover o diretório de dados atual para receber uma réplica do primeiro nó que foi recuperado acima.
 
 ```
-## restart do etcd nos demais hosts
-
+root@node2:~# rm -fr /var/lib/etcd/members
 root@node2:~# service etcd restart
 
+root@node3:~# rm -fr /var/lib/etcd/members
 root@node3:~# service etcd restart
 ```
 
