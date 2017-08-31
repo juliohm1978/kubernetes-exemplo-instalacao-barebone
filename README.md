@@ -1,4 +1,4 @@
-# Introdução
+# 1 Introdução
 
 Este repositório pretende hospedar um exemplo completo de uma instalação Kubernetes em barebone na língua portuguesa. Isto deve ajudar analistas e desenvolvedores a criar um cluster Kubernetes em uma infraestrutura própria usando a ferramenta [Kubespray](https://github.com/kubernetes-incubator/kubespray).
 
@@ -11,7 +11,7 @@ Os passos deste guia foram criados a partir de experiência própria com a insta
 * [Documentação oficial do Kubernetes](https://kubernetes.io/docs/home/): Indispensável e sem comentários.
 * [Repositório oficial Kubernetes](https://github.com/kubernetes/kubernetes): A comunidade no Github está muito ativa e dinâmica. Diversas discussões e solução de problemas já existem na seção de issues. Antes de desistir, confira se alguém já passou pelos problemas que você enfrenta.
 
-# Pré-requisitos
+# 2 Pré-requisitos
 
 O Kubespray suporta uma variedade de topologias. Com ele, é possível instalar o Kubernetes dentro de um único host, algo que pode ser útil para criar um pequeno ambiente de testes. Para criar uma topologia diferente e adicionar novos hosts, basta modifiar o seu inventário Ansible antes de iniciar a instalação. Mesmo depois de instalado, o cluster pode crescer executando a instalação novamente com um inventário atualizado.
 
@@ -32,15 +32,15 @@ Ao final, você terá um cluster completo organizado da seguinte forma:
 
 Este guia também presume que cada host mencionado acima possui um nome resolvível na rede DNS local e IPs fixos, acessíveis diretamente entre si na mesma rede.
 
-## Antes de Começar
+## 2.1 Antes de Começar
 
 Para um ambiente de testes, faça snapshots de suas VMs no estado inicial, apenas com o sistema operacional instalado e pronto para iniciar as atividades. Isto deve ajudar muito na hora de fazer experiências montando e desmontando seu cluster.
 
-## Sistema Operacional dos Hosts
+## 2.2 Sistema Operacional dos Hosts
 
 Este guia usa o Ubuntu 16.04 LTS em todos os hosts. Pela natureza da solução de containers e Kubernetes, acredito que não deva encontrar maiores problemas usando outra distribuição conhecida do mercado. Confira a documentação do Kubespray para detalhes sobre distribuições suportadas.
 
-## Ansible
+## 2.3 Ansible
 O Kubespray utiliza Ansible para relizar a instalação. Ele deve ser executado de sua estação de trabalho, instalando o Kubernetes remotamente via SSH. Assim, sua estação de trabalho precisa ter esta ferramenta instalada. Confira o [guia oficial de instalação do Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html) antes de continuar. Ao momento, a versão mais recente 2.3.2.0 deve funcionar sem problemas, gerando apenas _warnings_ de incompatibilidade.
 
 Parte da configuração do Ansible envolve preparar todos os hosts do cluster para um acesso remoto sem senha. Será preciso configurá-los com uma chave ssh, dando **acesso remoto de sua estação como usuário root pela chave**. Confira [os diversos tutoriais pela Internet](https://www.google.com.br/search?q=ssh+chave+sem+senha&oq=ssh+chave+sem+senha&aqs=chrome..69i57j0l5.5311j0j9&sourceid=chrome&ie=UTF-8) sobre como fazer isso.
@@ -51,7 +51,7 @@ Certifique-se, também, de que o Python está instalado nos hosts, pois o Ansibl
 sudo apt-get install -y python
 ```
 
-# Instalação Kubernetes
+# 3 Instalação Kubernetes
 
 Faça o download do Kubespray na sua estação de trabalho.
 
@@ -150,7 +150,7 @@ ansible-playbook scale.yml -i inventory/inventory.txt
 ```
 
 
-# Desinstalação
+# 4 Desinstalação
 
 Caso precise, também é possível remover tudo que foi instalado e recomeçar do zero.
 
@@ -163,7 +163,7 @@ ansible-playbook reset.yml -i inventory/inventory
 Note que o script `reset.yml` remove QUASE tudo. Docker é único componente que permanece instalado. Além dele, interfaces virtuais de rede que foram criadas para a comunicação do cluster também podem ficar ativas. O resultado é aleatório e imprevisível, podendo afetar e atrapalhar instalações subsequentes no mesmo ambiente. Para um ambiente limpo, retorne o snapshots de suas VMs para um ponto inicial antes de instalar qualquer componente.
 
 
-# Backup e Restauração
+# 5 Backup e Restauração
 
 Com o tempo, você acabará criando vários objetos do tipo Service, Deployment, DaemonSet, Ingress, etc. Todos os objetos Kubernetes são armazenados no banco `etcd`, que representa o estado atual do cluster.
 
@@ -174,13 +174,13 @@ Com base em diversas experiências que foram feitas, encontramos duas formas de 
 
 Seja qual for a opção, antes de tudo, é preciso ter um backup.
 
-## Backup do /etc/kubernetes
+## 5.1 Backup do /etc/kubernetes
 
 Este diretório possui todos os certificados e configurações internas do cluster. Cada host (master ou worker) possui um diretório `/etc/kubernetes` próprio. Em especial, uma cópia de backup para cada master é essencial para recuperar uma eventual corrupção dos dados.
 
 O backup deste diretório dos workers não se mostra tão necessário, pois este tipo de host pode ser facilmente recriado executando o playbook `cluster.yml` novamente.
 
-## Considerações Sobre o Etcd
+## 5.2 Considerações Sobre o Etcd
 
 A instalação feita pelo Kubespray prepara o Kubernetes para usar o primeiro nó etcd como primário e os demais como *failover*.
 
@@ -194,7 +194,7 @@ A partir do host, os parâmetros passados ao etcd ficam em `/etc/etcd.env` ou di
 service etcd restart
 ```
 
-## Backup do Etcd
+## 5.3 Backup do Etcd
 
 Para fazer um backup, é preciso usar a ferramenta `etcdctl` de dentro do container e depois copiar o backup para fora.
 
@@ -212,7 +212,7 @@ docker exec -it etcd1 tar -czf /tmp/backup.tgz /backup
 docker cp etcd1:/tmp/backup.tgz /algum/lugar/seguro/
 ```
 
-## Restauração do Etcd
+## 5.4 Restauração do Etcd
 
 O backup parece simples, mas uma eventual restauração é mais complicada.
 
@@ -319,7 +319,7 @@ service kubelet restart
 
 Neste ponto, caso queira garantir um ambiente renovado, faça o reboot de todos os masters, ou aguarde até todos os componentes do Kubernetes se recuperarem.
 
-## Dump Completo dos Objetos
+## 5.6 Dump Completo dos Objetos
 
 Outra forma de backup que pode ser útil é fazer um dump completo de todos os objetos que foram criados no Kubernetes (service accounts, persistente volumes, services, deployments, secrets, configmaps, etc).
 
@@ -379,7 +379,7 @@ Objetos do tipo **Pod** e **ReplicaSet** não são incluídos. Como são voláte
 
 Já os objetos do tipo **Node** são colocados em um arquivo separado por um bom motivo. Um novo cluster onde os objetos serão importados pode não ter a mesma topologia, ou sequer a mesma quantidade de hosts com os mesmos nomes e IPs. Entretanto, algumas informações podem estar contidas nestes objetos que afetam os serviços e aplicações -- por exemplo, alguns hosts podem ter labels e annotations que restringem quais pods podem ser executados, definindo seu papél no cluster. O arquivo `nodes.js` deve dispor estas informações. No pior dos casos, pode servir de referência para recriar o ambiente.
 
-## Restauração a Partir de um Dump
+## 5.7 Restauração a Partir de um Dump
 
 Esta etapa presume que um novo cluster foi criado e está pronto para receber novos objetos e aplicações. Para recuperar o backup, basta aplicar todos os objetos na ordem correta.
 
