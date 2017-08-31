@@ -314,19 +314,13 @@ Neste ponto, caso queira garantir um ambiente renovado, faça o reboot de todos 
 
 ## Dump Completo dos Objetos
 
-Outra forma de backup que pode ser útil é fazer um dump completo de todos os objetos que foram criados no Kubernetes (service accounts, persistente volumes, services, deployments, pods, secrets, configmaps, etc).
+Outra forma de backup que pode ser útil é fazer um dump completo de todos os objetos que foram criados no Kubernetes (service accounts, persistente volumes, services, deployments, secrets, configmaps, etc).
 
 A princípio, espera-se que uma cópia destes objetos já esteja disponível a partir do provisionamento das aplicações e serviços no cluster. Entretanto, a recuperação pode ser mais rápida a partir de um dump completo.
 
 Ao contrário dos procedimentos anteriores mencionados, recuperando um desastre parcial, este envolve criar um cluster completamente novo e restaurar um backup de todos os ojetos Kubernetes no cluster. Pode ser visto como um *export/import* das configurações, criando uma cópia do cluster existente.
 
 O script bash [`dump-cluster.sh`](dump-cluster.sh) é baseado nos [exemplos da CoreOS](https://github.com/coreos/docs/blob/master/kubernetes/cluster-dump-restore.md) e pode ser executado para criar dump completo. Ele cria um diretório `cluster-dump` e exporta todos os objetos em formato JSON.
-
-> NOTA: A exportação ignora objetos do namespace `kube-system` e `kube-public`. Caso sinta a necessidade de incluí-los, basta modificar o script. Eles foram excluídos cuidadosamente depois de constatado que os objetos de sistema do kubernetes não são portáveis para outra instalação.
-> 
-> SEGUNDA NOTA: O script também ignora propriedades voláteis, como UIDs, resourceVersion, creationTimestamp, etc.), deixando apenas o que for necessário para recriar os objetos.
-> 
-> TERCEIRA NOTA: Oficialmente, o Kubernetes não tem um bom suporte para uma exportação deste tipo. Há discussões em andamento sobre como implementar esta funcionalidade de forma robusta. Eis o motivo deste script ter sido criado por outras entidades. Apesar disso, testes realizados mostram que, na versão atual do Kubernetes (1.7.3), ele funciona bem, não causando problemas ou inconsistências.
 
 Para usar o script:
 
@@ -368,8 +362,45 @@ Ao final, os arquivos em formato JSON devem estar presentes:
     - Jobs
     - Ingresses
 
-A intenção deste backup é usar os arquivos JSON para recriar todos os objetos em um novo cluster.
+A exportação ignora objetos do namespace `kube-system` e `kube-public`. Caso sinta a necessidade de incluí-los, basta modificar o script. Eles foram excluídos cuidadosamente depois de constatado que os objetos de sistema do kubernetes não são portáveis para outra instalação.
 
-Para obter um backp completo, esta versão cria o arquivo `nodes.json`.
+O script também ignora propriedades voláteis, como UIDs, resourceVersion, creationTimestamp, etc.), deixando apenas o que for necessário para recriar os objetos.
+
+> NOTA: Oficialmente, o Kubernetes não tem um bom suporte para uma exportação deste tipo. Há discussões em andamento sobre como implementar esta funcionalidade de forma nativa e mais intuitiva. Eis o motivo deste script ter sido criado por outras entidades. Apesar disso, testes realizados mostram que, na versão atual 1.7.3, ele funciona bem, não causando problemas ou inconsistências.
+
+Objetos do tipo **Pod** e **ReplicaSet** não são incluídos. Como são voláteis e gerenciados pelos Deployments/ReplicationControllers/StatefulSets, não há muita necessidade de serem exportados. Devem ser recriados automaticamente quando o backup for importado em um novo ambiente.
+
+Já os objetos do tipo **Node** são colocados em um arquivo separado por um bom motivo. Um novo cluster onde os objetos serão importados pode não ter a mesma topologia, ou sequer a mesma quantidade de hosts com os mesmos nomes e IPs. Entretanto, algumas informações podem estar contidas nestes objetos que afetam os serviços e aplicações -- por exemplo, alguns hosts podem ter labels e annotations que restringem quais pods podem ser executados, definindo seu papél no cluster. O arquivo `nodes.js` deve guardar estas informações como referência.
 
 ## Restauração a Partir de um Dump
+
+Esta etapa presume que um novo cluster foi criado e está pronto para receber novos objetos e aplicações. Para recuperar o backup, basta aplicar todos os objetos na ordem correta.
+
+Os objetos de Nodes devem recuperar labels e annotations. Se o novo cluster é um ambiente idêntico a cluster antigo (mesmos hosts com nomes e IPs iguais), a importação é direta. Se a estrutura for diferente, sinta-se livre para modificar o arquivo `nodes.json` adaptando à nova estrutura, conforme a necessidade.
+
+```
+kubectl apply -f nodes.json
+```
+
+Importar os objetos Namespace.
+
+```
+kubectl apply -f ns.json
+```
+
+Importar o restante dos objetos.
+
+```
+kubectl apply -f cluster-dump.json
+```
+
+### Persistent Volumes e Claims
+
+Cada Persistent Volume (PV) pode pertencer a um PersistentVolumeClaim (PVC). Esta conexão é feita pelo Kubernetes relacionando o UID do PVC no objeto PV. Normalmente, não é preciso se preocupar com isso. Mas como estamos recuperando de uma instalação antiga, os objetos PVC foram criados novamente e todos receberam um UID diferente dentro do novo cluster.
+
+Sem esta correção de UIDs, Pods que usam PersistentVolumeClaims não conseguem subir corretamente e apresentam erro.
+
+Para ajudar, o script [`recover-pv-binding.sh`](recover-pv-binding.sh) foi criado. Ao ser executado, ele varre todos os PVs do ambiente, procura pelo PVC relacionado através de seu nome e corrige a referência do UID.
+
+Depois desta correção, os pods relacionados devem funcionar no próximo restart automático.
+
