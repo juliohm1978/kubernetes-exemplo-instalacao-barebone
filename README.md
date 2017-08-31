@@ -322,6 +322,14 @@ Ao contrário dos procedimentos anteriores mencionados, recuperando um desastre 
 
 O script bash [`dump-cluster.sh`](dump-cluster.sh) é baseado nos [exemplos da CoreOS](https://github.com/coreos/docs/blob/master/kubernetes/cluster-dump-restore.md) e pode ser executado para criar dump completo. Ele cria um diretório `cluster-dump` e exporta todos os objetos em formato JSON.
 
+> NOTA: A exportação ignora objetos do namespace `kube-system` e `kube-public`. Caso sinta a necessidade de incluí-los, basta modificar o script. Eles foram excluídos cuidadosamente depois de constatado que os objetos de sistema do kubernetes não são portáveis para outra instalação.
+> 
+> SEGUNDA NOTA: O script também ignora propriedades voláteis, como UIDs, resourceVersion, creationTimestamp, etc.), deixando apenas o que for necessário para recriar os objetos.
+> 
+> TERCEIRA NOTA: Oficialmente, o Kubernetes não tem um bom suporte para uma exportação deste tipo. Há discussões em andamento sobre como implementar esta funcionalidade de forma robusta. Eis o motivo deste script ter sido criado por outras entidades. Apesar disso, testes realizados mostram que, na versão atual do Kubernetes (1.7.3), ele funciona bem, não causando problemas ou inconsistências.
+
+Para usar o script:
+
 ```
 $ bash dump-cluster.sh
 
@@ -359,5 +367,9 @@ Ao final, os arquivos em formato JSON devem estar presentes:
     - DaemonSets
     - Jobs
     - Ingresses
+
+A intenção deste backup é usar os arquivos JSON para recriar todos os objetos em um novo cluster.
+
+Para obter um backp completo, esta versão cria o arquivo `nodes.json`.
 
 ## Restauração a Partir de um Dump
