@@ -396,7 +396,7 @@ kubectl apply -f cluster-dump.json
 
 ### Persistent Volumes e Claims
 
-Cada Persistent Volume (PV) pode pertencer a um PersistentVolumeClaim (PVC). Esta conexão é feita pelo Kubernetes relacionando o UID do PVC no objeto PV. Normalmente, não é preciso se preocupar com isso. Mas como estamos recuperando de uma instalação antiga, os objetos PVC foram criados novamente e todos receberam um UID diferente dentro do novo cluster.
+Cada Persistent Volume (PV) pode pertencer a um PersistentVolumeClaim (PVC). Esta conexão é feita pelo Kubernetes relacionando o UID do PVC no objeto PV. Normalmente, não é preciso se preocupar com isso. Mas como estamos recuperando de uma instalação antiga, os objetos PVC foram criados novamente e todos receberam um UID diferente dentro do novo cluster. Enquanto isso, os objetos PV foram importados com a referência de PVC antiga.
 
 Sem esta correção de UIDs, Pods que usam PersistentVolumeClaims não conseguem subir corretamente e apresentam erro.
 
