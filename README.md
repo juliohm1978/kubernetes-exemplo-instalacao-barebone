@@ -320,6 +320,44 @@ A princípio, espera-se que uma cópia destes objetos já esteja disponível a p
 
 Ao contrário dos procedimentos anteriores mencionados, recuperando um desastre parcial, este envolve criar um cluster completamente novo e restaurar um backup de todos os ojetos Kubernetes no cluster. Pode ser visto como um *export/import* das configurações, criando uma cópia do cluster existente.
 
+O script bash [`dump-cluster.sh`](dump-cluster.sh) é baseado nos [exemplos da CoreOS](https://github.com/coreos/docs/blob/master/kubernetes/cluster-dump-restore.md) e pode ser executado para criar dump completo. Ele cria um diretório `cluster-dump` e exporta todos os objetos em formato JSON.
 
+```
+$ bash dump-cluster.sh
+
+## output suprimido...
+
+$ ls -l
+total 684
+-rw-r--r-- 1 lamento lamento 642020 Aug 30 14:58 cluster-dump.json
+-rw-r--r-- 1 lamento lamento   2603 Aug 30 13:37 nodes.json
+-rw-r--r-- 1 lamento lamento    700 Aug 30 13:37 ns.json
+```
+
+Ao final, os arquivos em formato JSON devem estar presentes:
+
+* ns.json - Todos os namespaces
+* nodes.json - Todos os hosts (masters e workers).
+* cluster-dump.json - Demais objetos na seguinte ordem:
+    - ServiceAccounts
+    - ClusterRoles
+    - Roles
+    - ClusterRoleBindings
+    - RoleBindings
+    - StorageClasses
+    - ResourceQuotas
+    - Limits
+    - NetworkPolicies
+    - ConfigMaps
+    - PersistentVolumes
+    - PersistentVolumeClaims
+    - Secrets
+    - Services
+    - Deployments
+    - Statefulsets
+    - ReplicationControllers
+    - DaemonSets
+    - Jobs
+    - Ingresses
 
 ## Restauração a Partir de um Dump
