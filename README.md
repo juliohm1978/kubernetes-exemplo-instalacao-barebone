@@ -16,6 +16,6 @@ Os passos deste guia foram criados a partir de experiência própria com a insta
 Confira adiante os demais capítulos do guia:
 
 ## 2 [Pré-requisitos](PreRequisitos.md)  
-## 3 [Instalação Kubernetes](Instalacao.md)  
+## 3 [Instalação e Atualização](Instalacao.md)  
 ## 4 [Desinstalação](Desinstalacao.md)  
 ## 5 [Backup e Restauração](BackupRestauracao.md)

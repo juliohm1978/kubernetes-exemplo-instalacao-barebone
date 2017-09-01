@@ -128,7 +128,7 @@ Para aumentar o diminuir a quantidade de hosts no cluster, utilize o playbook `s
 ansible-playbook scale.yml -i inventory/inventory.txt
 ```
 
-## 3.6 Atualizando a Versão do Kubernetes
+# Atualizando a Versão do Kubernetes
 
 O Kubespray suporta atualizações do cluster com os mesmos playbooks de instalação. Isto pode ser feito diretamente com o `cluster.yml`. Atualize o Kubespray para sua versão mais recente, modifique o `k8s-cluster.yml` e excute novamente:
 
