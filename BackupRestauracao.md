@@ -133,7 +133,7 @@ docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member add etcd2 htt
 docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member add etcd3 https://IP_NODE3:2380
 ```
 
-Somente depois de adicionados todos os membros, podemos reiniciar o etcd nos demais hosts, lembrando de remover o diretório de dados atual para receber uma réplica do primeiro nó que foi recuperado acima.
+Depois de adicionados todos os membros, podemos reiniciar o etcd nos demais hosts, lembrando de remover o diretório de dados atual para receber uma réplica do primeiro nó que foi recuperado acima.
 
 ```
 root@node2:~# rm -fr /var/lib/etcd/members
