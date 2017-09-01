@@ -13,15 +13,19 @@ Recuperar um cluster parcialmente danificado é o caso mais simples. Uma instala
 
 Isto também é verdadeiro para o cluster etcd. De modo geral, um cluster etcd com três réplicas pode perder qualquer uma delas e continuar operando perfeitamente. Somente ao perder duas réplicas, o cluster para de funcionar. Apesar disso, a réplica restante continua com os dados intactos. A recuperação envolve apenas colocar duas novas instâncias no cluster para voltar ao estado operacional. Isto também pode ser facilmente realizado com o `cluster.yml`.
 
+Os procedimentos abaixo de backup e restauração envolvem um cenário de desastre completo, quando todo o cluster etcd for comprometido.
+
 ## 5.2 Considerações Sobre o Etcd
 
-Por baixo dos panos, o Kubespray instala o etcd dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando o diretório de dados e configuração como volumes.
+Por baixo dos panos, o Kubespray instala o etcd dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando o diretórios de dados e configuração como volumes.
 
-A partir do host, os parâmetros passados ao etcd ficam em `/etc/etcd.env` ou diretamente no arquivo `/usr/local/bin/etcd`. Ao modificar estes arquivos, basta reiniciar o serviço.
+A partir do host, os parâmetros passados ao etcd ficam em `/etc/etcd.env` ou diretamente no script `/usr/local/bin/etcd`. Ao modificar estes arquivos, basta reiniciar o serviço.
 
 ```
 service etcd restart
 ```
+
+Por se tratar de um serviço de sistema, é preciso usar o *systemd* para desligar e reiniciar o etcd. Não adianta mantar o container diretamente usando `docker stop etcd1`, pois o *systemd* será presistente em reiniciá-lo.
 
 ## 5.3 Backup do Etcd
 
@@ -37,9 +41,11 @@ docker cp etcd1:/var/lib/etcd/member/snap/db /backup/member/snap/
 ## compacta o backup (ainda dentro do container)
 docker exec -it etcd1 tar -czf /tmp/backup.tgz /backup
 
-## copia backup para fora
+## copia backup para fora do container
 docker cp etcd1:/tmp/backup.tgz /algum/lugar/seguro/
 ```
+
+> NOTA: Copiar o arquivo `/var/lib/etcd/member/snap/db` é essencial para o backup. Sem ele, não foi possível recuperar o cluster etcd.
 
 ## 5.4 Restauração do Etcd
 
@@ -50,11 +56,9 @@ Como dito anteriormente, isto deve ser necessário somente quando:
 * Houve um desastre completo e todas as instâncias etcd foram perdidas.
 * Uma versão corrompida da base foi replicada para todo o cluster.
 
-> NOTA: Vale lembrar que o Kubernetes é preparado para ser o mais resiliente possível. Hosts do tipo worker estão sempre tentando manter seus containers funcionando. Ao desligar todos os masters, perde-se a capacidade de modificar os objetos do cluster. Apesar disso, o que já estiver funcionando no cluster deve continuar funcionando.
+> NOTA: Vale lembrar que o Kubernetes é preparado para ser o mais resiliente possível. Hosts do tipo worker estão sempre tentando manter seus containers funcionando. Ao desligar todos os masters, perde-se a capacidade de modificar os objetos do cluster. Apesar disso, sob condições normais, o que já estiver funcionando no cluster deve continuar funcionando.
 
-Antes de iniciar uma restauração, recomenda-se fazer uma parada completa do conjunto master do cluster.
-
-Em cada master, desligue o kubelet para evitar que ele atue reiniciando containers locais.
+Antes de iniciar uma restauração, recomenda-se fazer uma parada completa do conjunto master. Em cada master, desligue o kubelet para evitar que ele atue reiniciando containers locais.
 
 ```
 service kubelet stop
@@ -104,22 +108,22 @@ service etcd restart
 docker logs -f etcd1
 ```
 
-Remova a flag `--force-new-cluster` do arquivo `/usr/local/bin/etcd` e reinicie o etcd novamente.
+Remova a flag `--force-new-cluster` do arquivo `/usr/local/bin/etcd` e reinicie o etcd (de novo).
 
 ```
 service etcd restart
 ```
 
-Se tudo deu certo, esta nova instância pensa que é um cluster de apenas um nó. Antes de adicionar outros membros, é preciso modificar sua propriedade *peer url*.
+Se tudo deu certo, esta nova instância agora pensa que é um cluster de apenas um nó. Antes de adicionar outros membros, é preciso modificar sua propriedade *peer url*.
 
 ```
-## confira os membros atuais do cluster
+## confira a lista de membros atuais
 docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member list
 
-## recupera o ID deste membro (etcd1)
+## recupera o ID deste membro
 MID=$(docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member list | awk '{print $1}' | sed 's/://g')
 
-## modifica peer url de localhost para IP_NODE1
+## modifica o peer url de "localhost" para "IP_NODE1"
 docker exec etcd1 etcdctl --endpoints https://IP_NODE1:2379 member update $MID https://IP_NODE1:2380
 
 ## adiciona os demais membros do cluster
@@ -138,7 +142,7 @@ root@node3:~# rm -fr /var/lib/etcd/members
 root@node3:~# service etcd restart
 ```
 
-Por desencargo, confira os logs do etcd para garantir que o cluster foi corretamente iniciado. Será possível ver mensagens referentes à eleição de um novo líder.
+Por desencargo, confira os logs para garantir que o cluster foi corretamente iniciado. Será possível ver mensagens referentes à eleição de um novo líder.
 
 Por fim, lembre-se de reiniciar o kubelet em cada master:
 
@@ -150,11 +154,11 @@ Neste ponto, caso queira garantir um ambiente renovado, faça o reboot de todos 
 
 ## 5.6 Dump Completo dos Objetos
 
-Outra forma de backup que pode ser útil é fazer um dump completo de todos os objetos que foram criados no Kubernetes (service accounts, persistente volumes, services, deployments, secrets, configmaps, etc).
+Outra forma de backup que pode ser útil é fazer um dump completo de todos os objetos que foram criados no Kubernetes (service accounts, persistent volumes, services, deployments, secrets, configmaps, etc).
 
-A princípio, espera-se que uma cópia destes objetos já esteja disponível a partir do provisionamento das aplicações e serviços no cluster. Entretanto, a recuperação pode ser mais rápida a partir de um dump completo.
+A princípio, espera-se que uma cópia destes objetos já esteja disponível a partir do provisionamento das aplicações e serviços. Entretanto, a recuperação pode ser mais rápida e prática a partir de um dump completo.
 
-Ao contrário dos procedimentos anteriores mencionados, recuperando o cluster de um desastre parcial, este envolve criar um cluster completamente novo e restaurar um backup de todos os ojetos Kubernetes no cluster. Pode ser visto como um *export/import* das configurações, criando uma cópia do cluster original.
+Ao contrário dos procedimentos anteriores mencionados, recuperando o cluster ainda existente, este envolve criar um cluster completamente novo e restaurar um backup de todos os ojetos Kubernetes no cluster. Pode ser visto como um *export/import* das configurações, criando uma cópia do cluster original.
 
 O script bash [`dump-cluster.sh`](sctipts/dump-cluster.sh) é baseado nos [exemplos da CoreOS](https://github.com/coreos/docs/blob/master/kubernetes/cluster-dump-restore.md) e pode ser executado para criar dump completo. Ele cria um diretório `cluster-dump` e exporta todos os objetos em formato JSON.
 
@@ -169,9 +173,9 @@ $ bash dump-cluster.sh
 
 $ ls -l
 total 684
--rw-r--r-- 1 lamento lamento 642020 Aug 30 14:58 cluster-dump.json
--rw-r--r-- 1 lamento lamento   2603 Aug 30 13:37 nodes.json
--rw-r--r-- 1 lamento lamento    700 Aug 30 13:37 ns.json
+-rw-r--r-- 1 user user 642020 Aug 30 14:58 cluster-dump.json
+-rw-r--r-- 1 user user   2603 Aug 30 13:37 nodes.json
+-rw-r--r-- 1 user user    700 Aug 30 13:37 ns.json
 ```
 
 Ao final, os arquivos em formato JSON devem estar presentes:
