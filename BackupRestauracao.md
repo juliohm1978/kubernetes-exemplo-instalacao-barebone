@@ -2,26 +2,20 @@
 
 Com o tempo, você acabará criando vários objetos do tipo Service, Deployment, DaemonSet, Ingress, etc. Todos os objetos Kubernetes são armazenados no banco `etcd`, que representa o estado atual do cluster.
 
-Com base em diversas experiências que foram feitas, encontramos duas formas de recuperação do cluster no caso de um desastre.
+Com base em diversas experiências que foram feitas, duas formas de recuperação do cluster podem ser usadas no caso de um desastre.
 
 1. Recuperar um cluster parcialmente danificado.
 2. Criar um novo cluster e recriar todos os objetos.
 
 Seja qual for a opção, antes de tudo, é preciso ter um backup.
 
-## 5.1 Backup do /etc/kubernetes
+Recuperar um cluster parcialmente danificado é o caso mais simples. Uma instalação com alta disponibilidade, como demonstrada neste guia, oferece esta facilidade. Do conjunto de masters, é possível perder alguns deles por completo e recuperá-los apenas executando o playbook `cluster.yml` novamente.
 
-Este diretório possui todos os certificados e configurações internas do cluster. Cada host (master ou worker) possui um diretório `/etc/kubernetes` próprio. Em especial, uma cópia de backup para cada master é essencial para recuperar uma eventual corrupção dos dados.
-
-O backup deste diretório dos workers não se mostra tão necessário, pois este tipo de host pode ser facilmente recriado executando o playbook `cluster.yml` novamente.
+Isto também é verdadeiro para o cluster etcd. De modo geral, um cluster etcd com três réplicas pode perder qualquer uma delas e continuar operando perfeitamente. Somente ao perder duas réplicas, o cluster para de funcionar. Apesar disso, a réplica restante continua com os dados intactos. A recuperação envolve apenas colocar duas novas instâncias no cluster para voltar ao estado operacional. Isto também pode ser facilmente realizado com o `cluster.yml`.
 
 ## 5.2 Considerações Sobre o Etcd
 
-A instalação feita pelo Kubespray prepara o Kubernetes para usar o primeiro nó etcd como primário e os demais como *failover*.
-
-De modo geral, um cluster etcd de três instâncias é capaz de perder um nó e continuar operando normalmente. Ao perder dois nós, ele para de funcionar, mas ainda pode ser facilmente recuperado. Nós adicionais podem ser adicionados a qualquer momento para replicar a base de dados. Esta é uma tarefa relativamente simples com o Kubespray, pois basta executar o playbook `cluster.yml` novamente com um inventário ajustado.
-
-Por baixo dos panos, o etcd executa dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando o diretório de dados e configuração como volumes.
+Por baixo dos panos, o Kubespray instala o etcd executa dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando o diretório de dados e configuração como volumes.
 
 A partir do host, os parâmetros passados ao etcd ficam em `/etc/etcd.env` ou diretamente no arquivo `/usr/local/bin/etcd`. Ao modificar estes arquivos, basta reiniciar o serviço.
 
