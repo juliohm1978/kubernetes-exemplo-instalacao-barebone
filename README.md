@@ -13,10 +13,7 @@ Os passos deste guia foram criados a partir de experiência própria com a insta
 
 ---
 
-2 [Pré-requisitos](PreRequisitos.md)
-
-3 [Instalação Kubernetes](Instalacao.md)
-
-4 [Desinstalação](Desinstalacao.md)
-
+2 [Pré-requisitos](PreRequisitos.md)  
+3 [Instalação Kubernetes](Instalacao.md)  
+4 [Desinstalação](Desinstalacao.md)  
 5 [Backup e Restauração](BackupRestauracao.md)

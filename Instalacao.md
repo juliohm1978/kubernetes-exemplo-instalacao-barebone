@@ -1,5 +1,12 @@
 # 3 Instalação Kubernetes
 
+A instalação envolte os seguintes passos:
+
+1. Obter o código fonte do Kubespray
+2. Ajustar o inventário para refletir a topologia desejada
+3. Ajustar algumas outras configurações do cluster que será criado
+4. Executar o playbook `cluster.yml`
+
 Faça o download do Kubespray na sua estação de trabalho.
 
 ```
@@ -15,7 +22,7 @@ cp inventory/inventory.example inventory/inventory.txt
 
 O conteúdo do inventário é simples e direto. Se o host possui mais de uma interface de rede, use a propriedade `ip=x.x.x.x` para especificar qual delas será usada. Atente para este valor, pois este será o IP usado para criar certificados e configurações dos componentes no cluster.
 
-> NOTA: Recomendo sempre configurar a propriedade `ip=x.x.x.x` para cada host. Mesmo que seus hosts não tenham várias interfaces de rede, lembre-se de que parte deste processo envolve a instalação do Docker. Este componente cria novas interfaces de rede virtuais com IPs e redes variados. Pode ser imprevisível qual interface de rede será escolhida pelo Kubespray para configurar componentes que fazem comunicação entre os hosts.
+É uma boa idéia configurar a propriedade `ip=x.x.x.x` para cada host. Mesmo que não tenham várias interfaces de rede, lembre-se de que a instalação Kubernetes envolve a instalação do Docker. Este componente cria novas interfaces de rede virtuais com IPs e subredes variadas. Nada garante que o Kubespray escolherá a interface correta para configurar os demais componentes do cluster.
 
 ```
 node1 ansible_ssh_user=root ansible_ssh_host=node01 ip=x.x.x.x
@@ -45,11 +52,15 @@ kube-node
 kube-master
 ```
 
-Faça uma revisão completa do arquivo `inventory/group_vars/k8s-cluster.yml` e modifique valores que fazem sentido para sua estrutura. Nele, estão os parâmetros gerais da instalação, como versão do kubernetes, versão de cada componente, plugin de rede que será usado (weave, flannel, calico), range de IPs de pods e serviços dentro do cluster e muito mais.
+Faça uma revisão completa do arquivo `inventory/group_vars/k8s-cluster.yml` e modifique valores que fazem sentido para o seu ambiente. Nele, estão os parâmetros gerais da instalação, como versão do kubernetes, versão de cada componente, plugin de rede que será usado (weave, flannel, calico), range de IPs de pods e serviços dentro do cluster e muito mais.
 
-> NOTA 1: O Kubernetes cria uma rede interna usada somente pelos Pods e Containers de seu cluster. Estas configurações podem afetar a topologia da rede de sua empresa/ambiente. Tome tempo para ler e entender a documentação relacionada aos plugins de rede ([Cluster Networking](https://kubernetes.io/docs/concepts/cluster-administration/networking/), [Network Plugins](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/), [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)) e entender como o Kubernetes faz o roteamento de pacotes para dentro de sua rede interna ([Using Source IP](https://kubernetes.io/docs/tutorials/services/source-ip/)). Escolher o plugin de rede apropriado para sua instalação é um passo importante e pode precisar ser revisado e aprovado pelos administradores de sua rede.
+Para funcionar, o Kubernetes cria uma rede interna usada somente pelos Pods e Containers do cluster. Estas configurações podem afetar ou conflitar com a topologia da rede de sua empresa/ambiente. Tome tempo para ler e entender a documentação relacionada aos plugins de rede ([Cluster Networking](https://kubernetes.io/docs/concepts/cluster-administration/networking/), [Network Plugins](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/), [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)) e entender como o Kubernetes faz o roteamento de pacotes para dentro de sua rede interna ([Using Source IP](https://kubernetes.io/docs/tutorials/services/source-ip/)). Escolher o plugin de rede apropriado para sua instalação é um passo importante e pode precisar ser revisado e aprovado pelos administradores de sua rede.
 
-> NOTA 2: O Kubespray vem melhorando constantemente, mas alguns valores menos conhecidos da configuração do cluster talvez não estejam disponíveis diretamente pelo arquivo `k8s-cluster.yml`. Hoje, os parâmetos já são bem abrangentes. Caso precise de algum outro valor customizado e tenha experiência editando playbooks do Ansible, confira os scripts dentro do diretório `roles` para controlar todos os detalhes da instalação de cada componente. Mas, cuidado! Não há garantias de que tudo funcione bem com este nível de customização.
+## Configurações Mais Avançadas
+
+A versão atual do Kubespray já melhorou bastante, mas alguns valores menos conhecidos da configuração do cluster talvez não estejam disponíveis diretamente pelo arquivo `k8s-cluster.yml`.
+
+Hoje, os parâmetos já são bem abrangentes. Caso precise de algum outro valor customizado e tenha experiência suficiente para editar playbooks do Ansible, confira os scripts dentro do diretório `roles` para controlar a instalação de cada componente. Com cuidado, lembre-se: não há garantias de que tudo funcione bem com este nível de customização.
 
 Com tudo pronto, basta executar o playbook `cluster.yml`.
 
@@ -84,7 +95,7 @@ kubernetes/master : Copy kubectl from hyperkube container --------------- 3.11s
 kubernetes/secrets : Check certs | check if a cert already exists on node --- 2.97s
 ```
 
-Se tudo deu certo, seu cluster está pronto para ser usado. No console de um master, confira os pods do sistema:
+Se tudo deu certo, nenhuma mensagem vermelha será vista no resumo da instalação e seu cluster estará pronto para ser usado. No console de um master, confira os pods do sistema:
 
 ```
 kubectl get pods --all-namespaces
