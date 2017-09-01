@@ -124,3 +124,6 @@ ansible-playbook upgrade-cluster.yml -i inventory/inventory.txt
 ```
 
 Ao contrário do `cluster.yml`, ele tenta drenar cada host antes de atualizar seus componentes. Isto realoca Pods e Containers para outros hosts enquanto a atualização ocorre.
+
+> NOTA: Vale lembrar que esta atualização elegante só faz sentido se as aplicações que estiverem no cluster Kubernetes estiverem preparadas para funcioanr em alta disponibilidade. Caso contrário, além de demorar mais tempo, a realocação dos Pods e Containers vai causar interrupções da mesma maneira que o `cluster.yml`. Analise suas necessidades na hora de realizar um upgrade.
+
