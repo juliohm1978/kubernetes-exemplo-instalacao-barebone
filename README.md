@@ -11,6 +11,7 @@ Os passos deste guia foram criados a partir de experiência própria com a insta
 * [Kubernetes on CoreOS](https://coreos.com/kubernetes/docs/latest/): Apesar de ser direcionado à solução proprietária da CoreOS, contém muitos detalhes necessários para uma instalação manual.
 * [Repositório oficial Kubernetes](https://github.com/kubernetes/kubernetes): A comunidade no Github está muito ativa e dinâmica. Diversas discussões e solução de problemas já existem na seção de issues. Antes de desistir, confira se alguém já passou pelos problemas que você enfrenta.
 * [Documentação do Ansible](http://docs.ansible.com/ansible/latest/index.html): Ferramenta de automação que o Kubespray utiliza para instalar o Kubernetes.
+* [Documentação do Kubespray](https://github.com/kubernetes-incubator/kubespray/tree/master/docs): Que, afinal de contas, é a ferramenta de instalação propriamente dita.
 
 Confira adiante os demais capítulos do guia:
 
