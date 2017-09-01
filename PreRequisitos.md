@@ -48,7 +48,7 @@ Não é rara a necessidade de montar volumes NFS ou CIFS (samba) de fora do clus
 Basicamente, o container recebe como volume um diretório do host onde o NFS/CIFS é originalmente montado.
 
 ```
-/var/lib/docker/algum/nfs/montado/em/dir/do/host -> /dir/dentro/do/container
+/var/lib/docker/algum/nfs/montado/no/host -> /dir/dentro/do/container
 ```
 
 A montagem/desmontagem nos hosts é gerenciada automaticamente conforme o container morre e reinicia em qualquer lugar do cluster. Entretanto, é importante lembrar que o ponto original de montagem de um NFS/CIFS é no próprio host.
