@@ -7,12 +7,16 @@ A instalação abrange os seguintes passos:
 3. Ajustar algumas outras configurações do cluster que será criado
 4. Executar o playbook `cluster.yml`
 
+## 3.1 Download
+
 Faça o download do Kubespray em sua estação de trabalho.
 
 ```
 git clone https://github.com/kubernetes-incubator/kubespray.git
 cd kubespray
 ```
+
+## 3.2 Inventário
 
 Faça uma cópia do arquivo `inventory/inventory.example` para montar um inventário com seus hosts.
 
@@ -56,19 +60,19 @@ Faça uma revisão completa do arquivo `inventory/group_vars/k8s-cluster.yml` e 
 
 Outro arquivo que possui parâmetros para instalação é o `inventory/group_vars/all.yml`. Confira se nada precisa ser customizado nele também.
 
-## Considerações Sobre a Configuração de Rede
+## 3.3 Considerações Sobre a Configuração de Rede
 
 Para funcionar, o Kubernetes cria uma rede interna usada somente pelos Pods e Containers de seu cluster. Dependendo de qual plugin de rede for usado e como este for configurado, estas configurações podem afetar ou conflitar com a topologia da rede de sua empresa/ambiente.
 
 Tome tempo para ler e entender a documentação relacionada aos plugins de rede ([Cluster Networking](https://kubernetes.io/docs/concepts/cluster-administration/networking/), [Network Plugins](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/), [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)) e entender como o Kubernetes faz o roteamento de pacotes para dentro de sua rede interna ([Using Source IP](https://kubernetes.io/docs/tutorials/services/source-ip/)). Escolher o plugin de rede apropriado para sua instalação é um passo importante e pode precisar de revisão/aprovação dos administradores de sua rede.
 
-## Configurações Mais Avançadas
+## 3.4 Configurações Mais Avançadas
 
 A versão atual do Kubespray já melhorou bastante, mas alguns valores menos conhecidos da configuração do cluster talvez não estejam disponíveis diretamente pelo arquivo `k8s-cluster.yml`.
 
 Hoje, os parâmetos já são bem abrangentes. Caso precise modificar algum valor menos conhecido e tenha experiência suficiente para editar playbooks do Ansible, confira os scripts dentro do diretório `roles` para controlar a instalação de cada componente. Com cuidado, lembre-se: não há garantias de que tudo funcione bem com este nível de customização.
 
-## Mãos à Obra
+## 3.5 Mãos à Obra
 
 Com tudo pronto, basta executar o playbook `cluster.yml`.
 
@@ -115,7 +119,7 @@ Para aumentar o diminuir a quantidade de hosts no cluster, utilize o playbook `s
 ansible-playbook scale.yml -i inventory/inventory.txt
 ```
 
-## 3.1 Atualizando a Versão do Kubernetes
+## 3.6 Atualizando a Versão do Kubernetes
 
 O Kubespray suporta atualizações do cluster com os mesmos playbooks de instalação. Isto pode ser feito diretamente como `cluster.yml`. Atualize o Kubespray para sua versão mais recente, modifique o `k8s-cluster.yml` e excute novamente:
 
