@@ -204,7 +204,7 @@ Ao final, os arquivos em formato JSON devem estar presentes:
     - Jobs
     - Ingresses
 
-A exportação ignora objetos do namespace `kube-system` e `kube-public`. Caso sinta a necessidade de incluí-los, basta modificar o script. Eles foram excluídos cuidadosamente depois de constatado que os objetos de sistema do kubernetes não são portáveis para outra instalação.
+A exportação ignora os namespaces `kube-system` e `kube-public`. Caso sinta a necessidade de incluí-los, basta modificar o script. Eles foram excluídos cuidadosamente depois de constatado que os objetos de sistema do kubernetes não são portáveis para outra instalação.
 
 O script também ignora propriedades voláteis, como UIDs, resourceVersion, creationTimestamp, etc.), deixando apenas o que for necessário para recriar os objetos.
 
@@ -212,19 +212,21 @@ O script também ignora propriedades voláteis, como UIDs, resourceVersion, crea
 
 Objetos do tipo **Pod** e **ReplicaSet** não são incluídos. Como são voláteis e gerenciados pelos Deployments/ReplicationControllers/StatefulSets, não há muita necessidade de serem exportados. Devem ser recriados automaticamente quando o backup for importado em um novo ambiente.
 
-Já os objetos do tipo **Node** são colocados em um arquivo separado por um bom motivo. Um novo cluster onde os objetos serão importados pode não ter a mesma topologia, ou sequer a mesma quantidade de hosts com os mesmos nomes e IPs. Entretanto, algumas informações podem estar contidas nestes objetos que afetam os serviços e aplicações -- por exemplo, alguns hosts podem ter labels e annotations que restringem quais pods podem ser executados, definindo seu papél no cluster. O arquivo `nodes.js` deve dispor estas informações. No pior dos casos, pode servir de referência para recriar o ambiente.
+Já os objetos do tipo **Node** são colocados em um arquivo separado por um bom motivo. Um novo cluster onde os objetos serão importados pode não ter a mesma topologia, ou sequer a mesma quantidade de hosts com os mesmos nomes e IPs. Entretanto, algumas informações podem estar contidas nestes objetos que afetam os serviços e aplicações -- por exemplo, alguns hosts podem ter labels e annotations que restringem quais pods podem ser executados. O arquivo `nodes.js` deve dispor estas informações. Isto facilita recriar o mesmo cluster exatamente como era ou, no pior dos casos, pode servir de referência para um novo ambiente.
 
 ## 5.7 Restauração a Partir de um Dump
 
-Esta etapa presume que um novo cluster foi criado e está pronto para receber novos objetos e aplicações. Para recuperar o backup, basta aplicar todos os objetos na ordem correta.
+Esta etapa presume que um novo cluster já foi criado e está pronto para receber novos objetos e aplicações. Para recuperar o backup, basta aplicar todos os objetos na ordem correta.
 
-Os objetos de Nodes devem recuperar labels e annotations. Se o novo cluster é um ambiente idêntico a cluster antigo (mesmos hosts com nomes e IPs iguais), a importação é direta. Se a estrutura for diferente, sinta-se livre para modificar o arquivo `nodes.json` adaptando à nova estrutura, conforme a necessidade.
+Se o novo cluster é um ambiente idêntico ao cluster antigo (mesmos hosts com nomes e IPs iguais), a importação é direta e deve recuperar labels e annotations de todos eles.
+
+Se a estrutura for diferente, sinta-se livre para modificar o arquivo `nodes.json`, conforme a necessidade.
 
 ```
 kubectl apply -f nodes.json
 ```
 
-Importar os objetos Namespace.
+Em seguida, importar os objetos Namespace.
 
 ```
 kubectl apply -f ns.json
@@ -238,11 +240,11 @@ kubectl apply -f cluster-dump.json
 
 ### Persistent Volumes e Claims
 
-Cada Persistent Volume (PV) pode pertencer a um PersistentVolumeClaim (PVC). Esta conexão é feita pelo Kubernetes relacionando o UID do PVC no objeto PV. Normalmente, não é preciso se preocupar com isso. Mas como estamos recuperando de uma instalação antiga, os objetos PVC foram criados novamente e todos receberam um UID diferente dentro do novo cluster. Enquanto isso, os objetos PV foram importados com a referência de PVC antiga.
+Cada Persistent Volume (PV) pode pertencer a um PersistentVolumeClaim (PVC). Esta conexão é feita pelo Kubernetes colocando o UID do PVC no objeto PV. Normalmente, não é preciso se preocupar com isso. Mas como estamos recuperando de uma instalação antiga, os objetos PVC foram criados novamente e todos receberam um UID diferente dentro do novo cluster. Enquanto isso, os objetos PV foram importados com referências de PVCs do cluster antigo.
 
 Sem esta correção de UIDs, Pods que usam PersistentVolumeClaims não conseguem subir corretamente e apresentam erro.
 
 Para ajudar, o script [`recover-pv-binding.sh`](scripts/recover-pv-binding.sh) foi criado. Ao ser executado, ele varre todos os PVs do ambiente, procura pelo PVC relacionado através de seu nome e corrige a referência do UID.
 
-Depois desta correção, os pods relacionados devem funcionar no próximo restart automático.
+Depois desta correção, os pods relacionados devem funcionar em seu próximo restart.
 
