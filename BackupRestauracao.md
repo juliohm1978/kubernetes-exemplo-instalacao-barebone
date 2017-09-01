@@ -217,7 +217,7 @@ Já os objetos do tipo **Node** são colocados em um arquivo separado por um bom
 
 ## 5.7 Restauração a Partir de um Dump
 
-Esta etapa presume que um novo cluster já foi criado e está pronto para receber novos objetos e aplicações. Para recuperar o backup, basta aplicar todos os objetos na ordem correta.
+Esta etapa presume que um novo cluster já foi criado e está pronto para receber novos objetos e aplicações (confira o capítulo de [Instalação](Instalacao.md)). Para recuperar o backup, basta aplicar todos os objetos na ordem correta.
 
 Se o novo cluster é um ambiente idêntico ao cluster antigo (mesmos hosts com nomes e IPs iguais), a importação é direta e deve recuperar labels e annotations de todos eles.
 
