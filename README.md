@@ -11,9 +11,12 @@ Os passos deste guia foram criados a partir de experiência própria com a insta
 * [Documentação oficial do Kubernetes](https://kubernetes.io/docs/home/): Indispensável e sem comentários.
 * [Repositório oficial Kubernetes](https://github.com/kubernetes/kubernetes): A comunidade no Github está muito ativa e dinâmica. Diversas discussões e solução de problemas já existem na seção de issues. Antes de desistir, confira se alguém já passou pelos problemas que você enfrenta.
 
-Siga abaixo para cada capítulo deste guia.
+---
 
 2 [Pré-requisitos](PreRequisitos.md)
+
 3 [Instalação Kubernetes](Instalacao.md)
+
 4 [Desinstalação](Desinstalacao.md)
+
 5 [Backup e Restauração](BackupRestauracao.md)
