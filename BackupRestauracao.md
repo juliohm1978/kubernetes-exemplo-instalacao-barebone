@@ -162,7 +162,7 @@ A princípio, espera-se que uma cópia destes objetos já esteja disponível a p
 
 Ao contrário dos procedimentos anteriores mencionados, recuperando o cluster de um desastre parcial, este envolve criar um cluster completamente novo e restaurar um backup de todos os ojetos Kubernetes no cluster. Pode ser visto como um *export/import* das configurações, criando uma cópia do cluster original.
 
-O script bash [`dump-cluster.sh`](dump-cluster.sh) é baseado nos [exemplos da CoreOS](https://github.com/coreos/docs/blob/master/kubernetes/cluster-dump-restore.md) e pode ser executado para criar dump completo. Ele cria um diretório `cluster-dump` e exporta todos os objetos em formato JSON.
+O script bash [`dump-cluster.sh`](sctipts/dump-cluster.sh) é baseado nos [exemplos da CoreOS](https://github.com/coreos/docs/blob/master/kubernetes/cluster-dump-restore.md) e pode ser executado para criar dump completo. Ele cria um diretório `cluster-dump` e exporta todos os objetos em formato JSON.
 
 > NOTA: Um pré-requisito do script de dump é a ferramente [jq](https://stedolan.github.io/jq/). Para instalar no Ubuntu, basta executar `apt-get install -y jq`
 
@@ -244,7 +244,7 @@ Cada Persistent Volume (PV) pode pertencer a um PersistentVolumeClaim (PVC). Est
 
 Sem esta correção de UIDs, Pods que usam PersistentVolumeClaims não conseguem subir corretamente e apresentam erro.
 
-Para ajudar, o script [`recover-pv-binding.sh`](recover-pv-binding.sh) foi criado. Ao ser executado, ele varre todos os PVs do ambiente, procura pelo PVC relacionado através de seu nome e corrige a referência do UID.
+Para ajudar, o script [`recover-pv-binding.sh`](scripts/recover-pv-binding.sh) foi criado. Ao ser executado, ele varre todos os PVs do ambiente, procura pelo PVC relacionado através de seu nome e corrige a referência do UID.
 
 Depois desta correção, os pods relacionados devem funcionar no próximo restart automático.
 
