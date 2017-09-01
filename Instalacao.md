@@ -56,7 +56,7 @@ Faça uma revisão completa do arquivo `inventory/group_vars/k8s-cluster.yml` e 
 
 Outro arquivo que possui parâmetros para instalação é o `inventory/group_vars/all.yml`. Confira se nada precisa ser customizado nele também.
 
-## Cuidados Com a Configuração de Rede
+## Considerações Sobre a Configuração de Rede
 
 Para funcionar, o Kubernetes cria uma rede interna usada somente pelos Pods e Containers de seu cluster. Dependendo de qual plugin de rede for usado e como este for configurado, estas configurações podem afetar ou conflitar com a topologia da rede de sua empresa/ambiente. Tome tempo para ler e entender a documentação relacionada aos plugins de rede ([Cluster Networking](https://kubernetes.io/docs/concepts/cluster-administration/networking/), [Network Plugins](https://kubernetes.io/docs/concepts/cluster-administration/network-plugins/), [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)) e entender como o Kubernetes faz o roteamento de pacotes para dentro de sua rede interna ([Using Source IP](https://kubernetes.io/docs/tutorials/services/source-ip/)). Escolher o plugin de rede apropriado para sua instalação é um passo importante e pode precisar de revisão/aprovação dos administradores de sua rede.
 
