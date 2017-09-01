@@ -53,7 +53,7 @@ Basicamente, o container recebe como volume um diretório do host onde o NFS/CIF
 
 A montagem/desmontagem nos hosts é gerenciada automaticamente conforme o container morre e reinicia em qualquer lugar do cluster. Entretanto, é importante lembrar que o ponto original de montagem de um NFS/CIFS é no próprio host.
 
-Serviços externos ao cluster Kubernetes não enxergam Pods e Services, muito menos os IPs destes objetos. Em uma configuração comum, a rede Kuberntes é isolada das rotas de seus hosts. Assim, para estes serviços externos, o acesso vem diretamente dos hosts.
+Além disso, serviços externos ao cluster Kubernetes não enxergam Pods e Services, muito menos os IPs destes objetos. Em uma configuração comum, a rede Kuberntes é isolada das rotas de seus hosts. Assim, para estes serviços externos, o acesso vem diretamente dos hosts.
 
 Isto implica em duas consequências imediatas:
 
