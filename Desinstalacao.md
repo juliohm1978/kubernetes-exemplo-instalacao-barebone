@@ -1,6 +1,6 @@
 # 4 Desinstalação
 
-O playbook `reset.yml` promete fazer exatamente isso.
+O playbook `reset.yml` **promete** fazer exatamente isso.
 
 ```
 ansible-playbook reset.yml -i inventory/inventory
