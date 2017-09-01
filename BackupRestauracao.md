@@ -8,7 +8,7 @@ Com base em diversas experiências que foram feitas, foram identificadas três f
 2. Recuperar um cluster etcd completamente corrompido.
 3. Criar um novo cluster e recriar todos os objetos.
 
-Seja qual for a opção, antes de tudo, é preciso ter um backup.
+Exceto pela opção (1), para todas as outras é preciso ter um backup.
 
 Recuperar um cluster parcialmente danificado é o caso mais simples. Uma instalação com alta disponibilidade, como demonstrada neste guia, oferece esta facilidade. Do conjunto de masters, é possível perder alguns deles por completo e recuperá-los apenas executando o playbook `cluster.yml` novamente.
 
