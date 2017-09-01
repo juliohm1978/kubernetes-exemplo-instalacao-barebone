@@ -11,9 +11,9 @@ Os passos deste guia foram criados a partir de experiência própria com a insta
 * [Kubernetes on CoreOS](https://coreos.com/kubernetes/docs/latest/): Apesar de ser direcionado à solução proprietária da CoreOS, contém muitos detalhes necessários para uma instalação manual.
 * [Repositório oficial Kubernetes](https://github.com/kubernetes/kubernetes): A comunidade no Github está muito ativa e dinâmica. Diversas discussões e solução de problemas já existem na seção de issues. Antes de desistir, confira se alguém já passou pelos problemas que você enfrenta.
 
----
+Confira adiante os demais capítulos do guia:
 
-### 2 [Pré-requisitos](PreRequisitos.md)  
-### 3 [Instalação Kubernetes](Instalacao.md)  
-### 4 [Desinstalação](Desinstalacao.md)  
-### 5 [Backup e Restauração](BackupRestauracao.md)
+## 2 [Pré-requisitos](PreRequisitos.md)  
+## 3 [Instalação Kubernetes](Instalacao.md)  
+## 4 [Desinstalação](Desinstalacao.md)  
+## 5 [Backup e Restauração](BackupRestauracao.md)
