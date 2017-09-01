@@ -64,6 +64,8 @@ A versão atual do Kubespray já melhorou bastante, mas alguns valores menos con
 
 Hoje, os parâmetos já são bem abrangentes. Caso precise modificar algum valor menos conhecido e tenha experiência suficiente para editar playbooks do Ansible, confira os scripts dentro do diretório `roles` para controlar a instalação de cada componente. Com cuidado, lembre-se: não há garantias de que tudo funcione bem com este nível de customização.
 
+## Mãos à Obra
+
 Com tudo pronto, basta executar o playbook `cluster.yml`.
 
 ```
