@@ -10,7 +10,7 @@ Sem um backup, todas as configurações e os objetos atuais do cluster serão pe
 
 ## Mas, cuidado!
 
-Ele remove **remove quase tudo, mas não remove tudo**.
+Ele remove **quase tudo, mas não remove tudo**.
 
 O Docker permanece instalado. Imagens Docker que foram baixadas continuam armazenadas nos hosts. Em especial, as interfaces virtuais de rede que foram criadas para a comunicação do cluster também podem ficar ativas e mal configuradas. O resultado é imprevisível, podendo afetar e atrapalhar instalações subsequentes no mesmo ambiente.
 
