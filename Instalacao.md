@@ -107,6 +107,15 @@ kubernetes/master : Copy kubectl from hyperkube container --------------- 3.11s
 kubernetes/secrets : Check certs | check if a cert already exists on node --- 2.97s
 ```
 
+Os componentes do cluster são instalados na seguinte ordem:
+
+* Docker
+* etcd
+* kubelet e kube-proxy
+* Plugin de Rede (calico, flannel ou weave)
+* kube-apiserver, kube-scheduler, and kube-controller-manager
+* Extensões (add-ons, como Kube-DNS)
+
 Se tudo deu certo, nenhuma mensagem vermelha será vista no resumo da instalação e seu cluster estará pronto para ser usado. No console de um master, confira os pods do sistema:
 
 ```
@@ -133,7 +142,8 @@ Apesar de direto, o `cluster.yml` pode interferir na execução do containers e 
 ansible-playbook upgrade-cluster.yml -i inventory/inventory.txt
 ```
 
-Ao contrário do `cluster.yml`, ele tenta drenar cada host antes de atualizar seus componentes. Isto realoca Pods e Containers para outros hosts enquanto a atualização ocorre.
+Ao contrário do `cluster.yml`, ele tenta drenar cada host antes de atualizar seus componentes. Isto realoca Pods e Containers para outros hosts enquanto a atualização ocorre. Enquanto que a atualização do `cluster.yml` ocorre em todos os hosts de forma paralela, o `upgrade-cluster.yml` executa as tarefas em um host de cada vez, sequencialmente.
 
-> NOTA: Vale lembrar que esta atualização elegante do `upgrade-cluster.yml` só faz sentido se as aplicações conternizadas estiverem preparadas para oferecer sua própria alta disponibilidade com réplicas transparentes. Caso contrário, além de demorar mais, a realocação dos Pods e Containers pode causar mais interrupções e indisponibilidades que o `cluster.yml`. Analise suas necessidades na hora de realizar um upgrade.
+Vale lembrar que esta atualização elegante do `upgrade-cluster.yml` só faz sentido se as aplicações conternizadas estiverem preparadas para oferecer sua própria alta disponibilidade com réplicas transparentes. Caso contrário, além de demorar mais, a realocação dos Pods e Containers pode causar mais interrupções e indisponibilidades que o `cluster.yml`. Analise suas necessidades na hora de realizar um upgrade.
 
+> NOTA: O playbook `upgrade-cluster.yml` só pode ser usado para atualizar um cluster existente, não sendo capaz de criar um cluster novo.
