@@ -109,11 +109,7 @@ service etcd restart
 docker logs -f etcd1
 ```
 
-Remova a flag `--force-new-cluster` do arquivo `/usr/local/bin/etcd` e reinicie o etcd (de novo).
-
-```
-service etcd restart
-```
+> NOTA: Para garantir e não esquecer de fazer isso mais tarde, remova AGORA a flag `--force-new-cluster` do arquivo `/usr/local/bin/etcd`.
 
 Se tudo deu certo, esta nova instância foi recuperada com sucesso, mas agora pensa que é um cluster de apenas um nó. Antes de adicionar outros membros, é preciso modificar sua propriedade *peer url*.
 
