@@ -2,10 +2,11 @@
 
 Com o tempo, você acabará criando vários objetos do tipo Service, Deployment, DaemonSet, Ingress, etc. Todos os objetos Kubernetes são armazenados no banco `etcd`, que representa o estado atual do cluster.
 
-Com base em diversas experiências que foram feitas, duas formas de recuperação podem ser usadas no caso de um desastre.
+Com base em diversas experiências que foram feitas, três formas de recuperação podem ser usadas no caso de um desastre.
 
-1. Recuperar um cluster parcialmente danificado.
-2. Criar um novo cluster e recriar todos os objetos.
+1. Recuperar um cluster etcd parcialmente danificado.
+2. Recuperar um cluster etcd completamente corrompido.
+3. Criar um novo cluster e recriar todos os objetos.
 
 Seja qual for a opção, antes de tudo, é preciso ter um backup.
 
