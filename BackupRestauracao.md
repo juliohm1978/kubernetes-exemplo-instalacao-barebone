@@ -18,7 +18,7 @@ Os procedimentos abaixo de backup e restauração envolvem um cenário de desast
 
 ## 5.2 Considerações Sobre o Etcd
 
-Por baixo dos panos, o Kubespray instala o etcd dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando o diretórios de dados e configuração como volumes.
+Por baixo dos panos, o Kubespray instala o etcd dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando diretórios de dados e configuração como volumes.
 
 A partir do host, os parâmetros passados ao etcd ficam em `/etc/etcd.env` ou diretamente no script `/usr/local/bin/etcd`. Ao modificar estes arquivos, basta reiniciar o serviço.
 
