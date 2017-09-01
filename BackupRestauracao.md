@@ -219,13 +219,13 @@ Já os objetos do tipo **Node** são colocados em um arquivo separado por um bom
 
 Esta etapa presume que um novo cluster já foi criado e está pronto para receber novos objetos e aplicações (confira o capítulo de [Instalação](Instalacao.md)). Para recuperar o backup, basta aplicar todos os objetos na ordem correta.
 
-Se o novo cluster é um ambiente idêntico ao cluster antigo (mesmos hosts com nomes e IPs iguais), a importação é direta e deve recuperar labels e annotations de todos eles.
-
-Se a estrutura for diferente, sinta-se livre para modificar o arquivo `nodes.json`, conforme a necessidade.
-
 ```
 kubectl apply -f nodes.json
 ```
+
+Se o novo cluster é um ambiente idêntico ao cluster antigo (mesmos hosts com nomes e IPs iguais), a importação é direta e deve recuperar labels e annotations de todos eles.
+
+Se a estrutura for diferente, sinta-se livre para modificar o arquivo `nodes.json`, conforme a necessidade.
 
 Em seguida, importar os objetos Namespace.
 
