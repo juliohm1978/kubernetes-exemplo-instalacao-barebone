@@ -26,7 +26,7 @@ A partir do host, os parâmetros passados ao etcd ficam em `/etc/etcd.env` ou di
 service etcd restart
 ```
 
-Por se tratar de um serviço de sistema, é preciso usar o *systemd* para desligar e reiniciar o etcd. Não adianta mantar o container diretamente usando `docker stop etcd1`, pois o *systemd* será presistente em reiniciá-lo.
+Por se tratar de um serviço de sistema, é preciso usar o *systemd* para desligar e reiniciar o etcd. Não adianta parar/matar o container diretamente usando `docker stop etcd1`, pois o *systemd* será presistente em reiniciá-lo.
 
 ## 5.3 Backup do Etcd
 
