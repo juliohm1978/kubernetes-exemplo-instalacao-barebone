@@ -16,6 +16,6 @@ O Docker permanece instalado e imagens que foram baixadas continuam armazenadas 
 
 Em especial, as interfaces virtuais de rede que foram criadas para a comunicação do cluster também podem ficar ativas e mal configuradas. O resultado é imprevisível, podendo afetar e atrapalhar instalações subsequentes no mesmo ambiente.
 
-Para começar novamente com um ambiente limpo, retorne o snapshots de suas VMs para um ponto inicial antes da instalação de qualquer componente.
+Para começar novamente com um ambiente limpo, retorne os snapshots de suas VMs para um ponto inicial antes da instalação de qualquer componente.
 
 
