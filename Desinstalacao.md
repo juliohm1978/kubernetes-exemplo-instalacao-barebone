@@ -1,15 +1,16 @@
 # 4 Desinstalação
 
-Caso precise, também é possível remover a estrutura que foi instalada e recomeçar.
+O playbook `reset.yml` promete fazer exatamente isso.
 
 ```
 ansible-playbook reset.yml -i inventory/inventory
 ```
 
+Sem um backup, todas as configurações e os objetos atuais do cluster serão perdidos. Isto inclui todos os containers que estiverem executando no momento, todos arquivos de configuração, toda a base de dados etcd e todos os certificados que foram criados para o cluster.
 
-## CUIDADO
+## Mas, cuidado!
 
-O playbook `reset.yml` remove **QUASE TUDO**. Sem um backup, todas as configurações e estado atual do cluster serão perdidos. Isto inclui todos os containers que estiverem executando no momento, todos arquivos de configuração, toda a base de dados etcd e todos os certificados que foram criados para o cluster.
+Ele remove **QUASE TUDO**.
 
 Como dito anteriomente, o `reset.yml` **remove quase tudo, mas não remove tudo**.
 
