@@ -2,7 +2,7 @@
 
 O Kubespray suporta uma variedade de topologias. Com ele, é possível instalar o Kubernetes dentro de um único host ou numa quantidade qualquer de máquinas.
 
-Este guia é uma demonstração de como instalar o Kubernetse em um conjunto razoável de máquinas para obter um cluster de alta disponibilidade. Para facilitar as atividades, presume que hosts são máquinas virtuais de qualquer espécie (VMWare, VirtualBox, etc.), todas na mesma rede, com IPs fixos e nomes resolvíveis no DNS local.
+Este guia é uma demonstração de como instalar o Kubernetes em um conjunto razoável de máquinas para obter um cluster de alta disponibilidade. Para facilitar as atividades, presume que hosts são máquinas virtuais de qualquer espécie (VMWare, VirtualBox, etc.), todas na mesma rede, com IPs fixos e nomes resolvíveis no DNS local.
 
 Para criar sua topologia, basta modifiar o inventário Ansible antes de iniciar a instalação. Mesmo depois de instalado, o cluster pode ser atualizado ou crescer de tamanho simplesmente executando a instalação novamente.
 
