@@ -121,7 +121,7 @@ ansible-playbook scale.yml -i inventory/inventory.txt
 
 ## 3.6 Atualizando a Versão do Kubernetes
 
-O Kubespray suporta atualizações do cluster com os mesmos playbooks de instalação. Isto pode ser feito diretamente como `cluster.yml`. Atualize o Kubespray para sua versão mais recente, modifique o `k8s-cluster.yml` e excute novamente:
+O Kubespray suporta atualizações do cluster com os mesmos playbooks de instalação. Isto pode ser feito diretamente com o `cluster.yml`. Atualize o Kubespray para sua versão mais recente, modifique o `k8s-cluster.yml` e excute novamente:
 
 ```
 ansible-playbook cluster.yml -i inventory/inventory.txt
