@@ -43,7 +43,7 @@ sudo apt-get install -y python
 
 ## 2.4 Volumes NFS ou CIFS
 
-Não é rara a necessidade de montar volumes NFS ou CIFS (samba) de fora do cluster Kubernetes dentro dos containers. Por baixo dos panos, o Kubernetes (que fundamentalmente usa essa funcionalidade do Docker) monta estes compartilhamentos no host em algum diretório dentro de `/var/lib/docker` e os repassa para os containers como um volume Docker.
+Não é rara a necessidade de montar volumes NFS ou CIFS (samba) de fora do cluster Kubernetes dentro dos containers. Por baixo dos panos, o Kubernetes (que fundamentalmente usa essa funcionalidade do Docker) monta estes compartilhamentos no host em algum diretório dentro de `/var/lib/docker` e os repassa para os containers como volumes Docker.
 
 Basicamente, o container recebe como volume um diretório do host onde o NFS/CIFS é originalmente montado.
 
