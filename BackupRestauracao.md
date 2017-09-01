@@ -115,7 +115,7 @@ Remova a flag `--force-new-cluster` do arquivo `/usr/local/bin/etcd` e reinicie 
 service etcd restart
 ```
 
-Se tudo deu certo, esta nova instância agora pensa que é um cluster de apenas um nó. Antes de adicionar outros membros, é preciso modificar sua propriedade *peer url*.
+Se tudo deu certo, esta nova instância foi recuperada com sucesso, mas agora pensa que é um cluster de apenas um nó. Antes de adicionar outros membros, é preciso modificar sua propriedade *peer url*.
 
 ```
 ## confira a lista de membros atuais
