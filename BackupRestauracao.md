@@ -249,3 +249,6 @@ Para ajudar, o script [`recover-pv-binding.sh`](scripts/recover-pv-binding.sh) f
 
 Depois desta correção, os pods relacionados devem funcionar em seu próximo restart.
 
+## The End
+
+Neste ponto, seu cluster deve estar recuperado e operante.
