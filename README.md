@@ -6,9 +6,9 @@ Para instalações menores, o [kubeadm](https://kubernetes.io/docs/setup/indepen
 
 Os passos deste guia foram criados a partir de experiência própria com a instalação do Kubernetes, experimentando e recriando o mesmo ambiente de várias formas para observar o resultado. Fontes recomendadas de leitura e pesquisa incluem:
 
-* [Kubernetes Anywhere](https://github.com/kubernetes/kubernetes-anywhere): Um guia detalhado de como instalar manualmente o Kubernetes no GCE ou AWS.
-* [Kubernetes on CoreOS](https://coreos.com/kubernetes/docs/latest/): Outro guia que, apesar de ser direcionado à solução proprietária da CoreOS, continua sendo uma fonte bem detalhada de todos os passos necessários para uma instalação manual.
 * [Documentação oficial do Kubernetes](https://kubernetes.io/docs/home/): Indispensável e sem comentários.
+* [Kubernetes Anywhere](https://github.com/kubernetes/kubernetes-anywhere): Um guia detalhado de como instalar manualmente o Kubernetes no GCE ou AWS.
+* [Kubernetes on CoreOS](https://coreos.com/kubernetes/docs/latest/): Apesar de ser direcionado à solução proprietária da CoreOS, contém muitos detalhes necessários para uma instalação manual.
 * [Repositório oficial Kubernetes](https://github.com/kubernetes/kubernetes): A comunidade no Github está muito ativa e dinâmica. Diversas discussões e solução de problemas já existem na seção de issues. Antes de desistir, confira se alguém já passou pelos problemas que você enfrenta.
 
 ---
