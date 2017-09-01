@@ -15,7 +15,7 @@ Isto também é verdadeiro para o cluster etcd. De modo geral, um cluster etcd c
 
 ## 5.2 Considerações Sobre o Etcd
 
-Por baixo dos panos, o Kubespray instala o etcd executa dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando o diretório de dados e configuração como volumes.
+Por baixo dos panos, o Kubespray instala o etcd dentro de um container independente, fora do Kubernetes. No host Ubuntu, ele é mantido como um *systemd service*. O container executa em modo privilegiado, ligado diretamente à rede do host e montando o diretório de dados e configuração como volumes.
 
 A partir do host, os parâmetros passados ao etcd ficam em `/etc/etcd.env` ou diretamente no arquivo `/usr/local/bin/etcd`. Ao modificar estes arquivos, basta reiniciar o serviço.
 
