@@ -4,7 +4,7 @@ Com o tempo, você acabará criando vários objetos do tipo Service, Deployment,
 
 Com base em diversas experiências que foram feitas, três formas de recuperação podem ser usadas no caso de um desastre.
 
-1. Recuperar um cluster etcd parcialmente danificado.
+1. Recuperar um cluster parcialmente danificado.
 2. Recuperar um cluster etcd completamente corrompido.
 3. Criar um novo cluster e recriar todos os objetos.
 
