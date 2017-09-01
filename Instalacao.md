@@ -127,7 +127,7 @@ O Kubespray suporta atualizações do cluster com os mesmos playbooks de instala
 ansible-playbook cluster.yml -i inventory/inventory.txt
 ```
 
-Apesar de direto, o `cluster.yml` pode interferir na execução do containers e interromper algumas aplicações que estiverem no cluster. Para fazer uma atualização *elegante* (graceful) o playbook `upgrade-cluster.yml` pode ser usado.
+Apesar de direto, o `cluster.yml` pode interferir na execução do containers e interromper algumas aplicações que estiverem no cluster. Para fazer uma atualização "elegante" (*graceful*) o playbook `upgrade-cluster.yml` pode ser usado.
 
 ```
 ansible-playbook upgrade-cluster.yml -i inventory/inventory.txt
