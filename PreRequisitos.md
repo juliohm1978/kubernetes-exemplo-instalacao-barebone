@@ -6,7 +6,7 @@ Este guia é uma demonstração de como instalar o Kubernetes em um conjunto raz
 
 Para criar sua topologia, basta modifiar o inventário Ansible antes de iniciar a instalação. Mesmo depois de instalado, o cluster pode ser atualizado ou crescer de tamanho simplesmente executando a instalação novamente.
 
-Um total de 6 (seis) máquinas virtuais será usado. Este guia presume que as VMs já foram criadas e configuradas com algum sistema operacional suportado pelo Kubespray.
+Será usado um total de 6 (seis) máquinas virtuais. Este guia presume que as VMs já foram criadas e configuradas com algum sistema operacional suportado pelo Kubespray.
 
 Ao final, você terá um cluster completo organizado da seguinte forma:
 
