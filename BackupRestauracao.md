@@ -155,7 +155,7 @@ Outra forma de backup que pode ser útil é fazer um dump completo de todos os o
 
 A princípio, espera-se que uma cópia destes objetos já esteja disponível a partir do provisionamento das aplicações e serviços. Entretanto, a recuperação pode ser mais rápida e prática a partir de um dump completo.
 
-Ao contrário dos procedimentos anteriores mencionados, recuperando o cluster ainda existente, este envolve criar um cluster completamente novo e restaurar um backup de todos os ojetos Kubernetes no cluster. Pode ser visto como um *export/import* das configurações, criando uma cópia do cluster original.
+Ao contrário dos procedimentos anteriores mencionados, recuperando o cluster ainda existente, este envolve criar um cluster completamente novo e restaurar um backup de todos os objetos Kubernetes. Pode ser visto como um *export/import* das configurações, criando uma cópia do cluster original.
 
 O script bash [`dump-cluster.sh`](scripts/dump-cluster.sh) é baseado nos [exemplos da CoreOS](https://github.com/coreos/docs/blob/master/kubernetes/cluster-dump-restore.md) e pode ser executado para criar dump completo. Ele cria um diretório `cluster-dump` e exporta todos os objetos em formato JSON.
 
